@@ -36,25 +36,31 @@ class Board:
     """Representacao interna de um tabuleiro de Takuzu."""
 
     def __init__(board):
-        self.board = board
+        self.board = board[:]
+        self.size=len(board[0])
+
 
     def get_number(self, row: int, col: int) -> int:
         """Devolve o valor na respetiva posicao do tabuleiro."""
-        # TODO
+        if row<0 or row>=self.size or col < 0 or col>=self.size:
+            return None
+        return self.board[row][col]
     
-        pass
-
     def adjacent_vertical_numbers(self, row: int, col: int) -> (int, int):
         """Devolve os valores imediatamente abaixo e acima,
         respectivamente."""
-        # TODO
-        pass
+        if 0<=row<self.size and 0<=col<self.size:
+            x1=Board.get_number(self,row+1,col)
+            x2=Board.get_number(self,row-1,col)
+        return(x1,x2)
 
     def adjacent_horizontal_numbers(self, row: int, col: int) -> (int, int):
         """Devolve os valores imediatamente a esquerda e a direita,
         respectivamente."""
-        # TODO
-        pass
+        if 0<=row<self.size and 0<=col<self.size:
+            x1=Board.get_number(self,row,col+1)
+            x2=Board.get_number(self,row,col-1)
+        return(x2,x1)
 
     @staticmethod
     def parse_instance_from_stdin():
