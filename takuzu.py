@@ -35,7 +35,7 @@ class TakuzuState:
 class Board:
     """Representacao interna de um tabuleiro de Takuzu."""
 
-    def __init__(board):
+    def __init__(self, board):
         self.board = board[:]
         self.size=len(board[0])
 
