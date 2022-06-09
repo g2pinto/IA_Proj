@@ -1,9 +1,9 @@
-# takuzu.py: Template para implementação do projeto de Inteligência Artificial 2021/2022.
-# Devem alterar as classes e funções neste ficheiro de acordo com as instruções do enunciado.
-# Além das funções e classes já definidas, podem acrescentar outras que considerem pertinentes.
+# takuzu.py: Template para implementacao do projeto de Inteligencia Artificial 2021/2022.
+# Devem alterar as classes e funcoes neste ficheiro de acordo com as instrucoes do enunciado.
+# Alem das funcoes e classes ja definidas, podem acrescentar outras que considerem pertinentes.
 
-# Grupo 00:
-# 00000 Nome1
+# Grupo 030:
+# 89627 Gustavo Pinto
 # 00000 Nome2
 
 import sys
@@ -33,11 +33,15 @@ class TakuzuState:
 
 
 class Board:
-    """Representação interna de um tabuleiro de Takuzu."""
+    """Representacao interna de um tabuleiro de Takuzu."""
+
+    def __init__(board):
+        self.board = board
 
     def get_number(self, row: int, col: int) -> int:
-        """Devolve o valor na respetiva posição do tabuleiro."""
+        """Devolve o valor na respetiva posicao do tabuleiro."""
         # TODO
+    
         pass
 
     def adjacent_vertical_numbers(self, row: int, col: int) -> (int, int):
@@ -47,14 +51,14 @@ class Board:
         pass
 
     def adjacent_horizontal_numbers(self, row: int, col: int) -> (int, int):
-        """Devolve os valores imediatamente à esquerda e à direita,
+        """Devolve os valores imediatamente a esquerda e a direita,
         respectivamente."""
         # TODO
         pass
 
     @staticmethod
     def parse_instance_from_stdin():
-        """Lê o test do standard input (stdin) que é passado como argumento
+        """Le o test do standard input (stdin) que e passado como argumento
         e retorna uma instância da classe Board.
 
         Por exemplo:
@@ -76,28 +80,28 @@ class Takuzu(Problem):
         pass
 
     def actions(self, state: TakuzuState):
-        """Retorna uma lista de ações que podem ser executadas a
+        """Retorna uma lista de acoes que podem ser executadas a
         partir do estado passado como argumento."""
         # TODO
         pass
 
     def result(self, state: TakuzuState, action):
         """Retorna o estado resultante de executar a 'action' sobre
-        'state' passado como argumento. A ação a executar deve ser uma
-        das presentes na lista obtida pela execução de
+        'state' passado como argumento. A acao a executar deve ser uma
+        das presentes na lista obtida pela execucao de
         self.actions(state)."""
         # TODO
         pass
 
     def goal_test(self, state: TakuzuState):
-        """Retorna True se e só se o estado passado como argumento é
-        um estado objetivo. Deve verificar se todas as posições do tabuleiro
-        estão preenchidas com uma sequência de números adjacentes."""
+        """Retorna True se e só se o estado passado como argumento e
+        um estado objetivo. Deve verificar se todas as posicoes do tabuleiro
+        estao preenchidas com uma sequencia de números adjacentes."""
         # TODO
         pass
 
     def h(self, node: Node):
-        """Função heuristica utilizada para a procura A*."""
+        """Funcao heuristica utilizada para a procura A*."""
         # TODO
         pass
 
@@ -107,7 +111,7 @@ class Takuzu(Problem):
 if __name__ == "__main__":
     # TODO:
     # Ler o ficheiro do standard input,
-    # Usar uma técnica de procura para resolver a instância,
-    # Retirar a solução a partir do nó resultante,
+    # Usar uma tecnica de procura para resolver a instância,
+    # Retirar a solucao a partir do nó resultante,
     # Imprimir para o standard output no formato indicado.
     pass
