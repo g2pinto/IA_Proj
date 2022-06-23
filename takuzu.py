@@ -34,39 +34,85 @@ class TakuzuState:
 
 class Board:
     """Representação interna de um tabuleiro de Takuzu."""
+    def __init__(self):
+        stdin = Board.parse_instance_from_stdin()
+        self.board = []
+
+        self.size = stdin[1]
+        for line in stdin[0]:
+            row = []
+            for char in line:
+                if char != ' ':
+                    row.append(int(char))
+            
+            self.board.append(row)
 
     def get_number(self, row: int, col: int) -> int:
         """Devolve o valor na respetiva posição do tabuleiro."""
-        # TODO
-        pass
+
+        return self.board[row - 1][col - 1]
 
     def adjacent_vertical_numbers(self, row: int, col: int) -> (int, int):
         """Devolve os valores imediatamente abaixo e acima,
         respectivamente."""
-        # TODO
-        pass
+
+        if (row - 2 < 0):
+            sup_lim = None
+        else:
+            sup_lim = self.board[row - 2][col - 1]
+
+        if (row >= self.size):
+            inf_lim = None
+        else:
+            inf_lim = self.board[row][col - 1]
+        
+        return (inf_lim, sup_lim)        
 
     def adjacent_horizontal_numbers(self, row: int, col: int) -> (int, int):
         """Devolve os valores imediatamente à esquerda e à direita,
         respectivamente."""
-        # TODO
-        pass
+        
+        if (col - 2 < 0):
+            inf_lim = None
+        else:
+            inf_lim = self.board[row - 1][col - 2]
+
+        if (col >= self.size):
+            sup_lim = None
+        else:
+            sup_lim = self.board[row - 1][col]
+        
+        return (inf_lim, sup_lim)    
 
     @staticmethod
     def parse_instance_from_stdin():
         """Lê o test do standard input (stdin) que é passado como argumento
         e retorna uma instância da classe Board.
-
+        
         Por exemplo:
             $ python3 takuzu.py < input_T01
 
             > from sys import stdin
             > stdin.readline()
         """
-        # TODO
-        pass
+        
+        file = open('input.txt', 'r')
+        lines = [line.rstrip() for line in file.readlines()]
+
+        size = int(lines[0])
+        lines = lines[1:]
+        
+        return (lines, size)
 
     # TODO: outros metodos da classe
+    def print_board(self):
+        i = 0
+        while i < self.size:
+            print('\t'.join(map(str, self.board[i])))
+            
+            i += 1
+            if i < self.size:
+                print('\n')
 
 
 class Takuzu(Problem):
