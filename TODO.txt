@@ -1,0 +1,43 @@
+TODO stuff
+
+- Init do Takuzu (basta receber o board inicial)
+- Actions: 
+    Não parece dificil,  é basicamente percorrer o tabuleiro todo 
+    e ver em que posicões dá para meter um 0 ou 1, e adicionar isso a 
+    uma lista de tuplos, que depois é retornada
+    Para ver se dá para meter um 0 (por exemplo), acho que é:
+        * Na linha em que se está, não pode existir numZeros >= size/2
+        * Na coluna em que se está, não pode existir numZeros >= size/2
+        * Se houver um 0 adjacente verticalmente, essa posicao nao pode
+        ter mais nenhum 0 adjancente verticalmente
+        * Se houver um 0 adjacente horizontalmente, essa posicao nao pode
+        ter mais nenhum 0 adjancente horizontalmente
+        * Se posicoesPreenchidas(linha) = size - 1: verificar se existe 
+        alguma linha totalmente preenchida com a configuracao igual a 
+        linha em que estamos (com 0 na posicoes em causa)
+        * Se posicoesPreenchidas(coluna) = size - 1: verificar se existe 
+        alguma coluna totalmente preenchida com a configuracao igual a 
+        coluna em que estamos (com 0 na posicao em causa)
+- Result:
+    Pretty straight forward, acho que é so a atualizar o tabuleiro de
+    acordo com o tuplo que recebe, e devolver o estado com isso
+- goal_test:
+    Também não parece dificil, mas possivelmente chato de fazer, verificar:
+        * Comparar linhas e verificar se existe duas iguais
+        * Comparar colunas e verificar se existem duas iguais
+        * Percorrer board e para cada um:
+            * Obter numeros adjancentes verticalmente:
+                * Se num_adj == num, verificar adjancentes verticais de num_adj
+                Adj_vertical(num_adj) não pode ser == num
+            * Obter numeros adjancentes horizontalmente:
+                * Se num_adj == num, verificar adjancentes horizontais de num_adj
+                Adj_vertical(num_adj) não pode ser == num
+- h:
+    Esta parece mais fdd, e honestly, não faco ideia de como fazer pq ainda
+    não sei o suficiente da matéria
+- main:
+    Parece obvia, mas só da para fazer dps de estar tudo
+
+
+Possiveis funcoes que maybe dão jeito:
+    - Double adjancent: obter os dois valores acima e abaixo 
