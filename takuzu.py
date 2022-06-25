@@ -4,7 +4,7 @@
 
 # Grupo 00:
 # 00000 Nome1
-# 00000 Nome2
+# 98876 Tomás Cayatte
 
 import sys
 from search import (
@@ -16,7 +16,6 @@ from search import (
     greedy_search,
     recursive_best_first_search,
 )
-
 
 class TakuzuState:
     state_id = 0
@@ -30,7 +29,6 @@ class TakuzuState:
         return self.id < other.id
 
     # TODO: outros metodos da classe
-
 
 class Board:
     """Representação interna de um tabuleiro de Takuzu."""
@@ -118,7 +116,7 @@ class Board:
 class Takuzu(Problem):
     def __init__(self, board: Board):
         """O construtor especifica o estado inicial."""
-        # TODO
+        self.initial = Board(board)
         pass
 
     def actions(self, state: TakuzuState):
