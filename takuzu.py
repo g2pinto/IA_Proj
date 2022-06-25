@@ -38,6 +38,11 @@ class Board:
     def __init__(self, board):
         self.board = board[:]
         self.size=len(board[0])
+        self.toFill = 0
+        for row in board:
+            for number in board[row]:
+                if (number == 2):
+                    self.toFill += 1
 
 
     def get_number(self, row: int, col: int) -> int:
