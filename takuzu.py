@@ -27,6 +27,9 @@ class TakuzuState:
 
     def __lt__(self, other):
         return self.id < other.id
+    
+    def getBoard(self):
+        return self.board
 
     # TODO: outros metodos da classe
 
@@ -80,7 +83,56 @@ class Board:
         else:
             sup_lim = self.board[row - 1][col]
         
-        return (inf_lim, sup_lim)    
+        return (inf_lim, sup_lim)  
+
+    def double_adjacent_up(self, row: int, col: int):
+        """ Devolve os dois valores imediatamente acima """
+        if (row + 1 >= self.size):
+            up_adj = None
+        else:
+            up_adj = self.board[row + 1][col]
+        if (row + 2 >= self.size):
+            up_next_adj = None
+        else:
+            up_next_adj = self.board[row + 2][col]
+        return (up_adj, up_next_adj)
+
+    def double_adjacent_down(self, row: int, col: int):
+        """ Devolve os dois valores imediatamente abaixo """
+        if (row - 1 < 0):
+            down_adj = None
+        else:
+            down_adj = self.board[row - 1][col]
+        if (row - 2 < 0 ):
+            down_next_adj = None
+        else:
+            down_next_adj = self.board[row - 2][col]
+        return (down_adj, down_next_adj)
+
+    def double_adjacent_right(self, row: int, col: int):
+        """ Devolve os dois valores imediatamente a direita """
+        if (col + 1 >= self.size):
+            right_adj = None
+        else:
+            right_adj = self.board[row][col + 1]
+        if (col + 2 >= self.size):
+            right_next_adj = None
+        else:
+            right_next_adj = self.board[row][col + 2]
+        return (right_adj, right_next_adj)
+    
+    def double_adjacent_left(self, row: int, col: int):
+        """ Devolve os dois valores imediatamente a esquerda """
+        if (col - 1 < 0):
+            left_adj = None
+        else:
+            left_adj = self.board[row][col - 1]
+        if (col - 2 < 0):
+            left_next_adj = None
+        else:
+            left_next_adj = self.board[row][col - 2]
+        return (left_adj, left_next_adj)
+        
 
     @staticmethod
     def parse_instance_from_stdin():
@@ -123,7 +175,12 @@ class Takuzu(Problem):
         """Retorna uma lista de acoes que podem ser executadas a
         partir do estado passado como argumento."""
         # TODO
-        pass
+        for row in range(state.board.size):
+            for col in range(state.board.size):
+                if state.board.get_number(row, col) != 2:
+                    continue
+                pass
+        
 
     def result(self, state: TakuzuState, action):
         """Retorna o estado resultante de executar a 'action' sobre
