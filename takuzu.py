@@ -7,6 +7,9 @@
 # 98876 Tomas Cayatte
 
 import sys
+from numpy import equal
+
+from sqlalchemy import column
 from search import (
     Problem,
     Node,
@@ -38,6 +41,11 @@ class Board:
     def __init__(self, board):
         self.board = board
         self.size = len(board[0])
+        self.toFill = 0
+        for i in range(len(board)):
+            for j in range(len(board1[i])):
+                if board[i][j] == 2:
+                    self.toFill+=1
 
     def get_number(self, row: int, col: int) -> int:
         """Devolve o valor na respetiva posição do tabuleiro."""
@@ -124,6 +132,51 @@ class Board:
             left_next_adj = self.board[row][col - 2]
         return (left_adj, left_next_adj)
         
+    def describe_row(self, row, val):
+        """ devolve (num_zeros, num_uns, num_dois) """
+        num_zeros = 0
+        num_uns = 0
+        num_dois = 0
+        for i in range(self.size):
+            val = self.board[row][i] 
+            if (val == 0):
+                num_zeros += 1
+            elif (val == 1):
+                num_uns += 1
+            elif (val == 2):
+                num_dois += 1
+        return (num_zeros, num_uns, num_dois)
+    
+    def describe_col(self, col, val):
+        """ devolve (num_zeros, num_uns, num_dois) """
+        num_zeros = 0
+        num_uns = 0
+        num_dois = 0
+        for i in range(self.size):
+            val = self.board[i][col] 
+            if (val == 0):
+                num_zeros += 1
+            elif (val == 1):
+                num_uns += 1
+            elif (val == 2):
+                num_dois += 1
+        return (num_zeros, num_uns, num_dois)
+
+    def equal_row(self, row):
+        for i in range(self.size):
+            if self.board[i] == row:
+                return True
+    
+    def get_col(self, col_num):
+        coluna = []
+        for i in range(self.size):
+            coluna.append(self.board[i][col_num])
+        return coluna
+        
+    def equal_col(self, col):
+        for i in range(self.size):
+            if (self.get_col(i) == col):
+                return True
 
     @staticmethod
     def parse_instance_from_stdin(file_name: str):
@@ -173,15 +226,133 @@ class Takuzu(Problem):
         self.initial = TakuzuState(Board)
         pass
 
+    def still_possible(self, list):
+        return list[0] or list[1]
+
     def actions(self, state: TakuzuState):
         """Retorna uma lista de acoes que podem ser executadas a
         partir do estado passado como argumento."""
-        # TODO
+        actions = []
+        if state.board.toFill == 0:
+            return ()
         for row in range(state.board.size):
+            available = [True, True] # true if zero is possible, if one is possible
             for col in range(state.board.size):
+                # SKIP ALREADY FILLED POSITIONS
                 if state.board.get_number(row, col) != 2:
                     continue
-                pass
+
+                # THE NUMBER OF ONES AND ZEROS (IN THE COL) SHOULD BE SIZE/2
+                column_tuple = state.board.describe_col(col) #(0s, 1s, 2s)
+                if (column_tuple[0] >= self.board.size/2):
+                    available[0] = False
+                if (column_tuple[1] >= self.board.size/2):
+                    available[1] = False
+                if (not self.still_possible(available)):
+                    continue
+
+                # TODO - se numero de zeros = size/2 meter um 1 é sempre acao (?)
+                # TODO - se numero de uns = size/2 meter um 0 é sempre acao (?)
+                # só necessário para problemas de tempo, i think
+
+                # THE NUMBER OF ONES AND ZEROS (IN THE ROW) SHOULD BE SIZE/2
+                row_tuple = state.bord.describe_row(row)
+                if (row_tuple[0] >= self.board.size/2):
+                    available[0] = False
+                if (row_tuple[1] >= self.board.size/2):
+                    available[1] = False
+                if (not self.still_possible(available)):
+                    continue
+
+                # VERIFICAR LINHAS IGUAIS
+                if (row_tuple[2] == 1):
+                    possible_row = state.board[row]
+                    possible_row[col] = 0
+                    if (state.board.equal_row(possible_row)):
+                        available[0] = False
+                    possible_row[col] = 1
+                    if (state.board.equal_row(possible_row)):
+                        available[1] = False
+                if (not self.still_possible(available)):
+                    continue
+                    
+                # VERIFICAR COLUNAS IGUAIS
+                if (column_tuple[2] == 1):
+                    possible_col = state.board.get_col(col)
+                    possible_col[row] = 0
+                    if (state.board.equal_row(possible_col)):
+                        available[0] = False
+                    possible_col[row] = 1
+                    if (state.board.equal_row(possible_col)):
+                        available[1] = False
+                if (not self.still_possible(available)):
+                    continue
+
+                # CHECK IF ADJACENT VERTICAL VALUES ARE ALREADY THE SAME
+                adjacent_vertical = self.board.adjacent_vertical_numbers(row, col)
+                if (adjacent_vertical[0] == adjacent_vertical[1]):
+                    if (adjacent_vertical[0] == 0):
+                        available[0] = False
+                    elif (adjacent_vertical[0] == 1):
+                        available[1] = False
+                
+                # CHECK IF ADJACENT HORIZONTAL VALUES ARE ALREADY THE SAME
+                adjacent_horizontal = self.board.adjacent_horizontal_numbers(row, col)
+                if (adjacent_horizontal[0] == adjacent_horizontal[1]):
+                    if (adjacent_horizontal[0] == 0):
+                        available[0] = False
+                    elif (adjacent_horizontal[0] == 1):
+                        available[1] = False
+                if (not self.still_possible(available)):
+                    continue
+
+                # CHECK IF DOWN VALUES ARE ALREADY DOUBLED
+                double_down = state.board.double_adjacent_down(row, col)
+                if (double_down[0] == double_down[1]):
+                    if (double_down[0] == 0):
+                        available[0] = False
+                    elif (double_down[0] == 1):
+                        available[1] = False
+                if (not self.still_possible(available)):
+                    continue
+
+                # CHECK IF UP VALUES ARE ALREADY DOUBLED
+                double_up = state.board.double_adjacent_up(row, col)
+                if (double_up[0] == double_up[1]):
+                    if (double_up[0] == 0):
+                        available[0] = False
+                    elif (double_up[0] == 1):
+                        available[1] = False
+                if (not self.still_possible(available)):
+                    continue
+                
+                # CHECK IF RIGHT VALUES ARE ALREADY DOUBLED
+                double_right = state.board.double_adjacent_right(row, col)
+                if (double_right[0] == double_right[1]):
+                    if (double_right[0] == 0):
+                        available[0] = False
+                    elif (double_right[0] == 1):
+                        available[1] = False
+                if (not self.still_possible(available)):
+                    continue
+                
+                # CHECK IF LEFT VALUES ARE ALREADY DOUBLED
+                double_left = state.board.double_adjacent_left(row, col)
+                if (double_left[0] == double_left[1]):
+                    if (double_left[0] == 0):
+                        available[0] = False
+                    elif (double_left[0] == 1):
+                        available[1] = False
+                if (not self.still_possible(available)):
+                    continue
+                
+                # ADICIONA ACOES POSSIVEIS
+                if (available[0]):
+                    actions.append((row, col, 0))
+                if (available[1]):
+                    actions.append((row, col, 1))
+        return actions
+
         
 
     def result(self, state: TakuzuState, action):

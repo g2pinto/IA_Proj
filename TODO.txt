@@ -6,16 +6,16 @@ TODO stuff
     e ver em que posicões dá para meter um 0 ou 1, e adicionar isso a 
     uma lista de tuplos, que depois é retornada
     Para ver se dá para meter um 0 (por exemplo), acho que é:
-        * Na linha em que se está, não pode existir numZeros >= size/2
-        * Na coluna em que se está, não pode existir numZeros >= size/2
-        * Se houver um 0 adjacente verticalmente, essa posicao nao pode
+    -    * Na linha em que se está, não pode existir numZeros >= size/2
+    -    * Na coluna em que se está, não pode existir numZeros >= size/2
+    -    * Se houver um 0 adjacente verticalmente, essa posicao nao pode
         ter mais nenhum 0 adjancente verticalmente
-        * Se houver um 0 adjacente horizontalmente, essa posicao nao pode
+    -    * Se houver um 0 adjacente horizontalmente, essa posicao nao pode
         ter mais nenhum 0 adjancente horizontalmente
-        * Se posicoesPreenchidas(linha) = size - 1: verificar se existe 
+    -    * Se posicoesPreenchidas(linha) = size - 1: verificar se existe 
         alguma linha totalmente preenchida com a configuracao igual a 
         linha em que estamos (com 0 na posicoes em causa)
-        * Se posicoesPreenchidas(coluna) = size - 1: verificar se existe 
+    -    * Se posicoesPreenchidas(coluna) = size - 1: verificar se existe 
         alguma coluna totalmente preenchida com a configuracao igual a 
         coluna em que estamos (com 0 na posicao em causa)
 - Result:
