@@ -35,37 +35,28 @@ class TakuzuState:
 
 class Board:
     """Representação interna de um tabuleiro de Takuzu."""
-    def __init__(self):
-        stdin = Board.parse_instance_from_stdin()
-        self.board = []
-
-        self.size = stdin[1]
-        for line in stdin[0]:
-            row = []
-            for char in line:
-                if char != ' ':
-                    row.append(int(char))
-            
-            self.board.append(row)
+    def __init__(self, board):
+        self.board = board
+        self.size = len(board[0])
 
     def get_number(self, row: int, col: int) -> int:
         """Devolve o valor na respetiva posição do tabuleiro."""
-
-        return self.board[row - 1][col - 1]
+        
+        return self.board[row][col]
 
     def adjacent_vertical_numbers(self, row: int, col: int) -> (int, int):
         """Devolve os valores imediatamente abaixo e acima,
         respectivamente."""
 
-        if (row - 2 < 0):
+        if (row - 1 < 0):
             sup_lim = None
         else:
-            sup_lim = self.board[row - 2][col - 1]
+            sup_lim = self.board[row - 1][col]
 
-        if (row >= self.size):
+        if (row >= self.size - 1):
             inf_lim = None
         else:
-            inf_lim = self.board[row][col - 1]
+            inf_lim = self.board[row + 1][col]
         
         return (inf_lim, sup_lim)        
 
@@ -73,15 +64,15 @@ class Board:
         """Devolve os valores imediatamente a esquerda e a direita,
         respectivamente."""
         
-        if (col - 2 < 0):
+        if (col - 1 < 0):
             inf_lim = None
         else:
-            inf_lim = self.board[row - 1][col - 2]
+            inf_lim = self.board[row][col - 1]
 
-        if (col >= self.size):
+        if (col >= self.size - 1):
             sup_lim = None
         else:
-            sup_lim = self.board[row - 1][col]
+            sup_lim = self.board[row][col + 1]
         
         return (inf_lim, sup_lim)  
 
@@ -135,7 +126,7 @@ class Board:
         
 
     @staticmethod
-    def parse_instance_from_stdin():
+    def parse_instance_from_stdin(file_name: str):
         """Le o test do standard input (stdin) que e passado como argumento
         e retorna uma instância da classe Board.
         
@@ -146,15 +137,26 @@ class Board:
             > stdin.readline()
         """
         
-        file = open('input.txt', 'r')
+        file = open(file_name, 'r')
         lines = [line.rstrip() for line in file.readlines()]
 
-        size = int(lines[0])
         lines = lines[1:]
         
-        return (lines, size)
+        board = []
+        for line in lines:
+            row = []
+            for char in line:
+                if char != ' ':
+                    row.append(int(char))
+            
+            board.append(row)
+        
+        return Board(board)
 
     # TODO: outros metodos da classe
+    def change_value(self, row: int, col: int, value: int):
+        self.board[row][col] = value
+    
     def print_board(self):
         i = 0
         while i < self.size:
@@ -168,7 +170,7 @@ class Board:
 class Takuzu(Problem):
     def __init__(self, board: Board):
         """O construtor especifica o estado inicial."""
-        self.initial = Board(board)
+        self.initial = TakuzuState(Board)
         pass
 
     def actions(self, state: TakuzuState):
@@ -187,15 +189,34 @@ class Takuzu(Problem):
         'state' passado como argumento. A acao a executar deve ser uma
         das presentes na lista obtida pela execucao de
         self.actions(state)."""
-        # TODO
-        pass
+        
+        result_state = state
+        result_state.board.change_value(action[0], action[1], action[2])
+        
+        return result_state
 
     def goal_test(self, state: TakuzuState):
         """Retorna True se e só se o estado passado como argumento e
         um estado objetivo. Deve verificar se todas as posicoes do tabuleiro
         estao preenchidas com uma sequencia de números adjacentes."""
-        # TODO
-        pass
+        
+        for i in range(state.board.size):
+            for j in range(state.board.size):
+                num = state.board.get_number(i, j)
+                a_h_num = state.board.adjacent_horizontal_numbers(i, j)
+                a_v_num = state.board.adjacent_vertical_numbers(i, j)
+        
+                adj = False
+                for m in (0, 1): # posicoes
+                    for n in (-1, 1): # adjacencias
+                        if num + n == a_h_num[m] or num + n == a_v_num[m]:
+                            adj = True
+
+                if not adj:
+                    return adj
+                
+        return adj
+                    
 
     def h(self, node: Node):
         """Funcao heuristica utilizada para a procura A*."""
@@ -211,4 +232,14 @@ if __name__ == "__main__":
     # Usar uma tecnica de procura para resolver a instância,
     # Retirar a solucao a partir do nó resultante,
     # Imprimir para o standard output no formato indicado.
+    
+    board = Board.parse_instance_from_stdin('input.txt')
+    problem = Takuzu(board)
+    s0 = TakuzuState(board)
+
+    print(s0.board.get_number(2, 2))    
+    s1 = problem.result(s0, (2, 2, 1))
+    print(s1.board.get_number(2, 2))
+    print(problem.goal_test(s1))
+    
     pass
