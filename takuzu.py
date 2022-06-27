@@ -134,7 +134,7 @@ class Board:
             left_next_adj = self.board[row][col - 2]
         return (left_adj, left_next_adj)
         
-    def describe_row(self, row, val):
+    def describe_row(self, row):
         """ devolve (num_zeros, num_uns, num_dois) """
         num_zeros = 0
         num_uns = 0
@@ -149,7 +149,7 @@ class Board:
                 num_dois += 1
         return (num_zeros, num_uns, num_dois)
     
-    def describe_col(self, col, val):
+    def describe_col(self, col):
         """ devolve (num_zeros, num_uns, num_dois) """
         num_zeros = 0
         num_uns = 0
@@ -208,6 +208,7 @@ class Board:
 
         newBoard = Board(board)
         print(newBoard.size)
+        print(newBoard.board[0][0])
         
         return newBoard
 
@@ -228,7 +229,7 @@ class Board:
 class Takuzu(Problem):
     def __init__(self, board: Board):
         """O construtor especifica o estado inicial."""
-        self.initial = TakuzuState(Board)
+        self.initial = TakuzuState(board)
         pass
 
     def still_possible(self, list):
@@ -249,9 +250,9 @@ class Takuzu(Problem):
 
                 # THE NUMBER OF ONES AND ZEROS (IN THE COL) SHOULD BE SIZE/2
                 column_tuple = state.board.describe_col(col) #(0s, 1s, 2s)
-                if (column_tuple[0] >= self.board.size/2):
+                if (column_tuple[0] >= state.board.size/2):
                     available[0] = False
-                if (column_tuple[1] >= self.board.size/2):
+                if (column_tuple[1] >= state.board.size/2):
                     available[1] = False
                 if (not self.still_possible(available)):
                     continue
@@ -261,17 +262,17 @@ class Takuzu(Problem):
                 # só necessário para problemas de tempo, i think
 
                 # THE NUMBER OF ONES AND ZEROS (IN THE ROW) SHOULD BE SIZE/2
-                row_tuple = state.bord.describe_row(row)
-                if (row_tuple[0] >= self.board.size/2):
+                row_tuple = state.board.describe_row(row)
+                if (row_tuple[0] >= state.board.size/2):
                     available[0] = False
-                if (row_tuple[1] >= self.board.size/2):
+                if (row_tuple[1] >= state.board.size/2):
                     available[1] = False
                 if (not self.still_possible(available)):
                     continue
 
                 # VERIFICAR LINHAS IGUAIS
                 if (row_tuple[2] == 1):
-                    possible_row = state.board[row]
+                    possible_row = state.board.board[row]
                     possible_row[col] = 0
                     if (state.board.equal_row(possible_row)):
                         available[0] = False
@@ -294,7 +295,7 @@ class Takuzu(Problem):
                     continue
 
                 # CHECK IF ADJACENT VERTICAL VALUES ARE ALREADY THE SAME
-                adjacent_vertical = self.board.adjacent_vertical_numbers(row, col)
+                adjacent_vertical = state.board.adjacent_vertical_numbers(row, col)
                 if (adjacent_vertical[0] == adjacent_vertical[1]):
                     if (adjacent_vertical[0] == 0):
                         available[0] = False
@@ -302,7 +303,7 @@ class Takuzu(Problem):
                         available[1] = False
                 
                 # CHECK IF ADJACENT HORIZONTAL VALUES ARE ALREADY THE SAME
-                adjacent_horizontal = self.board.adjacent_horizontal_numbers(row, col)
+                adjacent_horizontal = state.board.adjacent_horizontal_numbers(row, col)
                 if (adjacent_horizontal[0] == adjacent_horizontal[1]):
                     if (adjacent_horizontal[0] == 0):
                         available[0] = False
@@ -375,11 +376,9 @@ class Takuzu(Problem):
         """Retorna True se e só se o estado passado como argumento e
         um estado objetivo. Deve verificar se todas as posicoes do tabuleiro
         estao preenchidas com uma sequencia de números adjacentes."""
-        print("adeus")
-        print(Board.get_size(state.board))
-        print("ola")
-        for i in range(self.initial.board.size):
-            for j in range(self.initial.board.size):
+        newBoard = Board(state.board.board)
+        for i in range(newBoard.size):
+            for j in range(newBoard.size):
                 num = state.board.get_number(i, j)
                 a_h_num = state.board.adjacent_horizontal_numbers(i, j)
                 a_v_num = state.board.adjacent_vertical_numbers(i, j)
