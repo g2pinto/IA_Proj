@@ -239,6 +239,7 @@ class Takuzu(Problem):
     def __init__(self, board: Board):
         """O construtor especifica o estado inicial."""
         self.initial = TakuzuState(board)
+        self.path_cost = 0
         pass
 
     def still_possible(self, list):
@@ -374,10 +375,11 @@ class Takuzu(Problem):
         das presentes na lista obtida pela execucao de
         self.actions(state)."""
         
-        result_state = state
-        result_state.board.change_value(action[0], action[1], action[2])
+        newBoard = Board(state.board.board)
+        newBoard.change_value(action[0], action[1], action[2])
+        self.path_cost += self.h(self)
         
-        return result_state
+        return Takuzu(newBoard)
 
     def goal_test(self, state: TakuzuState):
         """Retorna True se e só se o estado passado como argumento e
