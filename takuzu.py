@@ -373,7 +373,6 @@ class Takuzu(Problem):
         'state' passado como argumento. A acao a executar deve ser uma
         das presentes na lista obtida pela execucao de
         self.actions(state)."""
-        
         result_state = state
         result_state.board.change_value(action[0], action[1], action[2])
         
@@ -383,7 +382,6 @@ class Takuzu(Problem):
         """Retorna True se e só se o estado passado como argumento e
         um estado objetivo. Deve verificar se todas as posicoes do tabuleiro
         estao preenchidas com uma sequencia de números adjacentes."""
-                
         for i in range(state.board.size):
             for j in range(state.board.size):
                 num = state.board.get_number(i, j)
