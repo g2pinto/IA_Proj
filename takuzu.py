@@ -6,14 +6,12 @@
 # 89627 Gustavo Pinto
 # 98876 Tomas Cayatte
 
+import time
 import sys
-from numpy import equal
-
-from sqlalchemy import column
 from search import (
-    Problem,
-    Node,
-    astar_search,
+    Node, 
+    Problem, 
+    astar_search, 
     breadth_first_tree_search,
     depth_first_tree_search,
     greedy_search,
@@ -30,9 +28,6 @@ class TakuzuState:
 
     def __lt__(self, other):
         return self.id < other.id
-    
-    def getBoard(self):
-        return self.board
 
     # TODO: outros metodos da classe
 
@@ -43,7 +38,7 @@ class Board:
         self.size = len(board[0])
         self.toFill = 0
         for i in range(len(board)):
-            for j in range(len(board1[i])):
+            for j in range(len(board[i])):
                 if board[i][j] == 2:
                     self.toFill+=1
 
@@ -57,32 +52,32 @@ class Board:
         respectivamente."""
 
         if (row - 1 < 0):
-            sup_lim = None
+            up_adj = None
         else:
-            sup_lim = self.board[row - 1][col]
+            up_adj = self.board[row - 1][col]
 
         if (row >= self.size - 1):
-            inf_lim = None
+            down_adj = None
         else:
-            inf_lim = self.board[row + 1][col]
+            down_adj = self.board[row + 1][col]
         
-        return (inf_lim, sup_lim)        
+        return (down_adj, up_adj)        
 
     def adjacent_horizontal_numbers(self, row: int, col: int) -> (int, int):
         """Devolve os valores imediatamente a esquerda e a direita,
         respectivamente."""
         
         if (col - 1 < 0):
-            inf_lim = None
+            down_adj = None
         else:
-            inf_lim = self.board[row][col - 1]
+            down_adj = self.board[row][col - 1]
 
         if (col >= self.size - 1):
-            sup_lim = None
+            up_adj = None
         else:
-            sup_lim = self.board[row][col + 1]
+            up_adj = self.board[row][col + 1]
         
-        return (inf_lim, sup_lim)  
+        return (down_adj, up_adj)  
 
     def double_adjacent_up(self, row: int, col: int):
         """ Devolve os dois valores imediatamente acima """
@@ -90,10 +85,12 @@ class Board:
             up_adj = None
         else:
             up_adj = self.board[row + 1][col]
+            
         if (row + 2 >= self.size):
             up_next_adj = None
         else:
             up_next_adj = self.board[row + 2][col]
+            
         return (up_adj, up_next_adj)
 
     def double_adjacent_down(self, row: int, col: int):
@@ -102,10 +99,12 @@ class Board:
             down_adj = None
         else:
             down_adj = self.board[row - 1][col]
+            
         if (row - 2 < 0 ):
             down_next_adj = None
         else:
             down_next_adj = self.board[row - 2][col]
+            
         return (down_adj, down_next_adj)
 
     def double_adjacent_right(self, row: int, col: int):
@@ -114,10 +113,12 @@ class Board:
             right_adj = None
         else:
             right_adj = self.board[row][col + 1]
+            
         if (col + 2 >= self.size):
             right_next_adj = None
         else:
             right_next_adj = self.board[row][col + 2]
+        
         return (right_adj, right_next_adj)
     
     def double_adjacent_left(self, row: int, col: int):
@@ -132,35 +133,39 @@ class Board:
             left_next_adj = self.board[row][col - 2]
         return (left_adj, left_next_adj)
         
-    def describe_row(self, row, val):
+    def describe_row(self, row):
         """ devolve (num_zeros, num_uns, num_dois) """
-        num_zeros = 0
-        num_uns = 0
-        num_dois = 0
+        count_0 = 0
+        count_1 = 0
+        count_2 = 0
         for i in range(self.size):
-            val = self.board[row][i] 
+            val = self.board[row][i]
             if (val == 0):
-                num_zeros += 1
+                count_0 += 1
             elif (val == 1):
-                num_uns += 1
+                count_1 += 1
             elif (val == 2):
-                num_dois += 1
-        return (num_zeros, num_uns, num_dois)
+                count_2 += 1
+        return (count_0, count_1, count_2)
     
-    def describe_col(self, col, val):
+    def describe_col(self, col):
         """ devolve (num_zeros, num_uns, num_dois) """
-        num_zeros = 0
-        num_uns = 0
-        num_dois = 0
+        count_0 = 0
+        count_1 = 0
+        count_2 = 0
         for i in range(self.size):
             val = self.board[i][col] 
             if (val == 0):
-                num_zeros += 1
+                count_0 += 1
             elif (val == 1):
-                num_uns += 1
+                count_1 += 1
             elif (val == 2):
-                num_dois += 1
-        return (num_zeros, num_uns, num_dois)
+                count_2 += 1
+
+        return (count_0, count_1, count_2)
+
+    def get_row(self, row):
+        return self.board[row]
 
     def equal_row(self, row):
         for i in range(self.size):
@@ -168,10 +173,10 @@ class Board:
                 return True
     
     def get_col(self, col_num):
-        coluna = []
+        col = []
         for i in range(self.size):
-            coluna.append(self.board[i][col_num])
-        return coluna
+            col.append(self.board[i][col_num])
+        return col
         
     def equal_col(self, col):
         for i in range(self.size):
@@ -353,8 +358,6 @@ class Takuzu(Problem):
                     actions.append((row, col, 1))
         return actions
 
-        
-
     def result(self, state: TakuzuState, action):
         """Retorna o estado resultante de executar a 'action' sobre
         'state' passado como argumento. A acao a executar deve ser uma
@@ -366,7 +369,7 @@ class Takuzu(Problem):
         
         return result_state
 
-    def goal_test(self, state: TakuzuState):
+    def goal_test(self, state: TakuzuState): # ERRADO
         """Retorna True se e só se o estado passado como argumento e
         um estado objetivo. Deve verificar se todas as posicoes do tabuleiro
         estao preenchidas com uma sequencia de números adjacentes."""
@@ -376,24 +379,44 @@ class Takuzu(Problem):
                 num = state.board.get_number(i, j)
                 a_h_num = state.board.adjacent_horizontal_numbers(i, j)
                 a_v_num = state.board.adjacent_vertical_numbers(i, j)
-        
-                adj = False
-                for m in (0, 1): # posicoes
-                    for n in (-1, 1): # adjacencias
-                        if num + n == a_h_num[m] or num + n == a_v_num[m]:
-                            adj = True
-
-                if not adj:
-                    return adj
-                
-        return adj
+            
+                if a_h_num[0] == num == a_h_num[1] or a_v_num[0] == num == a_v_num[1]:
+                    return False
                     
-
+            row_desc = state.board.describe_row(i)
+            if state.board.size%2 == 0:
+                if not (state.board.size/2 == row_desc[0] == row_desc[1]):
+                    return False
+            else:
+                if (state.board.size//2 == row_desc[0] and row_desc[0] == row_desc[1]+1 or state.board.size//2 == row_desc[1] and row_desc[1] == row_desc[0]+1):
+                    return False
+        
+        for i in range(state.board.size):
+            for j in range(i + 1, state.board.size):
+                if state.board.get_row(i) == state.board.get_row(j):
+                    return False
+        
+                if state.board.get_col(i) == state.board.get_col(j):
+                    return False
+        
+        return True                  
+              
     def h(self, node: Node):
         """Funcao heuristica utilizada para a procura A*."""
-        # TODO
-        pass
+        h = 0
+        
+        for i in range(node.state.board.size):
+            desc_row = node.state.board.desc_row(i)
+            h += desc_row[2] * 5
+            h += abs(desc_row[0] - desc_row[1]) * 15
+            
 
+        
+            
+        
+
+
+                
     # TODO: outros metodos da classe
 
 
@@ -403,14 +426,14 @@ if __name__ == "__main__":
     # Usar uma tecnica de procura para resolver a instância,
     # Retirar a solucao a partir do nó resultante,
     # Imprimir para o standard output no formato indicado.
+    start_time = time.time()    
     
     board = Board.parse_instance_from_stdin('input.txt')
     problem = Takuzu(board)
     s0 = TakuzuState(board)
 
-    print(s0.board.get_number(2, 2))    
-    s1 = problem.result(s0, (2, 2, 1))
-    print(s1.board.get_number(2, 2))
-    print(problem.goal_test(s1))
+    print(problem.goal_test(s0))
     
+    print(time.time() - start_time, "seconds")
     pass
+
