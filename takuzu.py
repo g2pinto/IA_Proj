@@ -377,7 +377,7 @@ class Takuzu(Problem):
         das presentes na lista obtida pela execucao de
         self.actions(state)."""
         
-        newBoard = state.board.copy()
+        newBoard = Board(state.board.board)
         newBoard.change_value(action[0], action[1], action[2])
         self.path_cost += self.h(self)
         
@@ -423,7 +423,6 @@ class Takuzu(Problem):
             desc_row = node.state.board.describe_row(i)
             h += desc_row[2] * 5
             h += abs(desc_row[0] - desc_row[1]) * 15
-        return h
             
         return h
 
