@@ -373,8 +373,13 @@ if __name__ == "__main__":
     tabuleiro=Board.parse_instance(file)
     problema=Numbrix(tabuleiro)
     print(Board.to_string(tabuleiro))
+    
+    
     ##instrumented_problem=InstrumentedProblem(problema)
     goal_node=depth_first_tree_search(problema)
+    
+    print(goal_node.state.board.numbs)
+    
     ##nodes=astar_search(instrumented_problem)
     print(Board.to_string(goal_node.state.board))
     ##print(nodes)
