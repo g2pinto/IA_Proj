@@ -89,7 +89,7 @@ class Board:
         return (down_adj, up_adj)  
 
     @staticmethod
-    def parse_instance_from_stdin(file_name: str):
+    def parse_instance_from_stdin():
         """Le o test do standard input (stdin) que e passado como argumento
         e retorna uma instância da classe Board.
         
@@ -99,11 +99,12 @@ class Board:
             > from sys import stdin
             > stdin.readline()
         """
-        file = open(file_name, 'r')
-        lines = [line.rstrip() for line in file.readlines()]
 
-        lines = lines[1:]
-        
+        size = int(sys.stdin.readline())
+        lines = []
+        for i in range(size):
+            lines.append(sys.stdin.readline().rstrip())
+                    
         board = []
         for line in lines:
             row = []
@@ -434,7 +435,7 @@ class Takuzu(Problem):
         for i in range(node.state.board.size):
             desc_row = node.state.board.describe_row(i)
             desc_col = node.state.board.describe_col(i)
-            h += desc_row[2] * 5
+            #h += desc_row[2] * 5
             #h += abs(desc_row[0] - desc_row[1]) * 15
             #h += abs(desc_col[0] - desc_col[1]) * 15
             
@@ -468,10 +469,7 @@ if __name__ == "__main__":
     #    goal_node.state.board.print_board()
     #    print(time.time() - start_time, "seconds")
     
-    
-    
-    file = sys.argv[1]
-    board = Board.parse_instance_from_stdin(file)
+    board = Board.parse_instance_from_stdin()
     problem = Takuzu(board)
     
     goal_node = depth_first_tree_search(problem)
