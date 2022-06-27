@@ -213,8 +213,8 @@ class Board:
             board.append(row)
 
         newBoard = Board(board)
-        print(newBoard.size)
-        print(newBoard.board[0][0])
+        #print(newBoard.size)
+        #print(newBoard.board[0][0])
         
         return newBoard
 
@@ -236,6 +236,7 @@ class Takuzu(Problem):
     def __init__(self, board: Board):
         """O construtor especifica o estado inicial."""
         self.initial = TakuzuState(board)
+        self.path_cost = 0
         pass
 
     def still_possible(self, list):
@@ -371,10 +372,11 @@ class Takuzu(Problem):
         das presentes na lista obtida pela execucao de
         self.actions(state)."""
         
-        result_state = state
-        result_state.board.change_value(action[0], action[1], action[2])
+        newBoard = state.board.copy()
+        newBoard.change_value(action[0], action[1], action[2])
+        self.path_cost += self.h(self)
         
-        return result_state
+        return Takuzu(newBoard)
 
     def goal_test(self, state: TakuzuState): # ERRADO
         """Retorna True se e só se o estado passado como argumento e
@@ -413,9 +415,10 @@ class Takuzu(Problem):
         h = 0
         
         for i in range(node.state.board.size):
-            desc_row = node.state.board.desc_row(i)
+            desc_row = node.state.board.describe_row(i)
             h += desc_row[2] * 5
             h += abs(desc_row[0] - desc_row[1]) * 15
+        return h
             
 
         
@@ -434,13 +437,15 @@ if __name__ == "__main__":
     # Retirar a solucao a partir do nó resultante,
     # Imprimir para o standard output no formato indicado.
     start_time = time.time()    
-    
-    board = Board.parse_instance_from_stdin('testes-takuzu/input_T12')
-    print(board.size)
+    file=sys.argv[1]
+    board = Board.parse_instance_from_stdin(file)
+    #print(board.size)
     problem = Takuzu(board)
 
-    goal_node=depth_first_tree_search(problem)
+    goal_node=astar_search(problem)
+
+    print(goal_node.board.print_board())
     
-    print(time.time() - start_time, "seconds")
+    #print(time.time() - start_time, "seconds")
     pass
 
