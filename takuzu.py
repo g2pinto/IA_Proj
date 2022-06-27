@@ -42,12 +42,15 @@ class Board:
                 if board[i][j] == 2:
                     self.toFill+=1
 
+    def get_size(self):
+        return self.size
+
     def get_number(self, row: int, col: int) -> int:
         """Devolve o valor na respetiva posição do tabuleiro."""
         
         return self.board[row][col]
 
-    def adjacent_vertical_numbers(self, row: int, col: int) -> (int, int):
+    def adjacent_vertical_numbers(self, row: int, col: int):
         """Devolve os valores imediatamente abaixo e acima,
         respectivamente."""
 
@@ -63,7 +66,7 @@ class Board:
         
         return (down_adj, up_adj)        
 
-    def adjacent_horizontal_numbers(self, row: int, col: int) -> (int, int):
+    def adjacent_horizontal_numbers(self, row: int, col: int):
         """Devolve os valores imediatamente a esquerda e a direita,
         respectivamente."""
         
@@ -204,12 +207,15 @@ class Board:
         for line in lines:
             row = []
             for char in line:
-                if char != ' ':
+                if char != ' ' and char != '\t':
                     row.append(int(char))
             
             board.append(row)
+
+        newBoard = Board(board)
+        print(newBoard.size)
         
-        return Board(board)
+        return newBoard
 
     # TODO: outros metodos da classe
     def change_value(self, row: int, col: int, value: int):
@@ -373,9 +379,11 @@ class Takuzu(Problem):
         """Retorna True se e só se o estado passado como argumento e
         um estado objetivo. Deve verificar se todas as posicoes do tabuleiro
         estao preenchidas com uma sequencia de números adjacentes."""
-        
-        for i in range(state.board.size):
-            for j in range(state.board.size):
+        print("adeus")
+        print(Board.get_size(state.board))
+        print("ola")
+        for i in range(self.initial.board.size):
+            for j in range(self.initial.board.size):
                 num = state.board.get_number(i, j)
                 a_h_num = state.board.adjacent_horizontal_numbers(i, j)
                 a_v_num = state.board.adjacent_vertical_numbers(i, j)
@@ -428,11 +436,11 @@ if __name__ == "__main__":
     # Imprimir para o standard output no formato indicado.
     start_time = time.time()    
     
-    board = Board.parse_instance_from_stdin('input.txt')
+    board = Board.parse_instance_from_stdin('testes-takuzu/input_T12')
+    print(board.size)
     problem = Takuzu(board)
-    s0 = TakuzuState(board)
 
-    print(problem.goal_test(s0))
+    goal_node=depth_first_tree_search(problem)
     
     print(time.time() - start_time, "seconds")
     pass
