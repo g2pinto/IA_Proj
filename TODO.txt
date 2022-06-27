@@ -41,3 +41,18 @@ TODO stuff
 
 Possiveis funcoes que maybe dão jeito:
     - Double adjancent: obter os dois valores acima e abaixo 
+
+
+
+
+Heurísticas:
+
+(IDEIAS)
+
+
+h_1(n) = numero_de_posicoes_vazias
+h_2(n) = numero_de_posicoes_vazias * a + (posicoes_totais/2 - numZeros) * b + (posicoes_totais/2 - numUns)*c
+h_3(n) = (numero_linhas_not_full + numero_colunas_not_full) * a
+h_4(n) = h_2(n) * a + h_3(n) * b
+
+
