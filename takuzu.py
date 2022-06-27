@@ -35,6 +35,10 @@ class TakuzuState:
 
 # TODO: outros metodos da classe
 
+
+
+
+
 class Board:
     """Representação interna de um tabuleiro de Takuzu."""
     def __init__(self, board):
@@ -414,9 +418,11 @@ class Takuzu(Problem):
         h = 0
         
         for i in range(node.state.board.size):
-            desc_row = node.state.board.desc_row(i)
+            desc_row = node.state.board.describe_row(i)
             h += desc_row[2] * 5
             h += abs(desc_row[0] - desc_row[1]) * 15
+            
+        return h
 
 # TODO: outros metodos da classe
 
@@ -429,13 +435,29 @@ if __name__ == "__main__":
     # Ler o ficheiro do standard input,
     # Usar uma tecnica de procura para resolver a instância,
     # Retirar a solucao a partir do nó resultante,
-    # Imprimir para o standard output no formato indicado.
-    start_time = time.time()    
+    # Imprimir para o standard output no formato indicado. 
     
-    board = Board.parse_instance_from_stdin('testes-takuzu/input_T12')
+    '''tests = ['testes-takuzu/input_T01', 'testes-takuzu/input_T02', 'testes-takuzu/input_T03', 'testes-takuzu/input_T04', 'testes-takuzu/input_T05', \
+        'testes-takuzu/input_T06', 'testes-takuzu/input_T07', 'testes-takuzu/input_T08', 'testes-takuzu/input_T09', 'testes-takuzu/input_T10', \
+        'testes-takuzu/input_T11', 'testes-takuzu/input_T12']
+    
+    for i in range(12):
+        start_time = time.time() 
+        
+        board = Board.parse_instance_from_stdin(tests[i])
+        problem = Takuzu(board)
+        
+        goal_node = astar_search(problem)
+        
+        print(time.time() - start_time, "seconds")
+    '''
+    
+    file = sys.argv[1]
+    board = Board.parse_instance_from_stdin(file)
     problem = Takuzu(board)
-
+    
     goal_node = depth_first_tree_search(problem)
     
-    print(time.time() - start_time, "seconds")
+    print(goal_node.state.board.get_size(), goal_node.state.board.print_board(board))
+    
     pass
