@@ -18,6 +18,10 @@ from search import (
     recursive_best_first_search,
 )
 
+
+
+
+
 class TakuzuState:
     state_id = 0
 
@@ -29,7 +33,11 @@ class TakuzuState:
     def __lt__(self, other):
         return self.id < other.id
 
-    # TODO: outros metodos da classe
+# TODO: outros metodos da classe
+
+
+
+
 
 class Board:
     """Representação interna de um tabuleiro de Takuzu."""
@@ -37,23 +45,22 @@ class Board:
         self.board = board
         self.size = len(board[0])
         self.toFill = 0
+        
         for i in range(len(board)):
             for j in range(len(board[i])):
                 if board[i][j] == 2:
-                    self.toFill+=1
+                    self.toFill += 1
 
     def get_size(self):
         return self.size
 
     def get_number(self, row: int, col: int) -> int:
         """Devolve o valor na respetiva posição do tabuleiro."""
-        
         return self.board[row][col]
 
     def adjacent_vertical_numbers(self, row: int, col: int):
         """Devolve os valores imediatamente abaixo e acima,
         respectivamente."""
-
         if (row - 1 < 0):
             up_adj = None
         else:
@@ -67,9 +74,7 @@ class Board:
         return (down_adj, up_adj)        
 
     def adjacent_horizontal_numbers(self, row: int, col: int):
-        """Devolve os valores imediatamente a esquerda e a direita,
-        respectivamente."""
-        
+        """Devolve os valores imediatamente a esquerda e a direita, respectivamente."""
         if (col - 1 < 0):
             down_adj = None
         else:
@@ -82,6 +87,39 @@ class Board:
         
         return (down_adj, up_adj)  
 
+    @staticmethod
+    def parse_instance_from_stdin(file_name: str):
+        """Le o test do standard input (stdin) que e passado como argumento
+        e retorna uma instância da classe Board.
+        
+        Por exemplo:
+            $ python3 takuzu.py < input_T01
+
+            > from sys import stdin
+            > stdin.readline()
+        """
+        file = open(file_name, 'r')
+        lines = [line.rstrip() for line in file.readlines()]
+
+        lines = lines[1:]
+        
+        board = []
+        for line in lines:
+            row = []
+            for char in line:
+                if char != ' ' and char != '\t':
+                    row.append(int(char))
+            
+            board.append(row)
+
+        new_Board = Board(board)
+        
+        return new_Board
+
+# TODO: outros metodos da classe
+    def change_value(self, row: int, col: int, value: int):
+        self.board[row][col] = value
+    
     def double_adjacent_up(self, row: int, col: int):
         """ Devolve os dois valores imediatamente acima """
         if (row + 1 >= self.size):
@@ -185,43 +223,7 @@ class Board:
         for i in range(self.size):
             if (self.get_col(i) == col):
                 return True
-
-    @staticmethod
-    def parse_instance_from_stdin(file_name: str):
-        """Le o test do standard input (stdin) que e passado como argumento
-        e retorna uma instância da classe Board.
-        
-        Por exemplo:
-            $ python3 takuzu.py < input_T01
-
-            > from sys import stdin
-            > stdin.readline()
-        """
-        
-        file = open(file_name, 'r')
-        lines = [line.rstrip() for line in file.readlines()]
-
-        lines = lines[1:]
-        
-        board = []
-        for line in lines:
-            row = []
-            for char in line:
-                if char != ' ' and char != '\t':
-                    row.append(int(char))
             
-            board.append(row)
-
-        newBoard = Board(board)
-        #print(newBoard.size)
-        #print(newBoard.board[0][0])
-        
-        return newBoard
-
-    # TODO: outros metodos da classe
-    def change_value(self, row: int, col: int, value: int):
-        self.board[row][col] = value
-    
     def print_board(self):
         i = 0
         while i < self.size:
@@ -230,6 +232,9 @@ class Board:
             i += 1
             if i < self.size:
                 print('\n')
+
+
+
 
 
 class Takuzu(Problem):
@@ -420,14 +425,12 @@ class Takuzu(Problem):
             h += abs(desc_row[0] - desc_row[1]) * 15
         return h
             
+        return h
 
-        
-            
-        
+# TODO: outros metodos da classe
 
 
-                
-    # TODO: outros metodos da classe
+
 
 
 if __name__ == "__main__":
@@ -435,17 +438,29 @@ if __name__ == "__main__":
     # Ler o ficheiro do standard input,
     # Usar uma tecnica de procura para resolver a instância,
     # Retirar a solucao a partir do nó resultante,
-    # Imprimir para o standard output no formato indicado.
-    start_time = time.time()    
-    file=sys.argv[1]
-    board = Board.parse_instance_from_stdin(file)
-    #print(board.size)
-    problem = Takuzu(board)
-
-    goal_node=astar_search(problem)
-
-    print(goal_node.board.print_board())
+    # Imprimir para o standard output no formato indicado. 
     
-    #print(time.time() - start_time, "seconds")
+    '''tests = ['testes-takuzu/input_T01', 'testes-takuzu/input_T02', 'testes-takuzu/input_T03', 'testes-takuzu/input_T04', 'testes-takuzu/input_T05', \
+        'testes-takuzu/input_T06', 'testes-takuzu/input_T07', 'testes-takuzu/input_T08', 'testes-takuzu/input_T09', 'testes-takuzu/input_T10', \
+        'testes-takuzu/input_T11', 'testes-takuzu/input_T12']
+    
+    for i in range(12):
+        start_time = time.time() 
+        
+        board = Board.parse_instance_from_stdin(tests[i])
+        problem = Takuzu(board)
+        
+        goal_node = astar_search(problem)
+        
+        print(time.time() - start_time, "seconds")
+    '''
+    
+    file = sys.argv[1]
+    board = Board.parse_instance_from_stdin(file)
+    problem = Takuzu(board)
+    
+    goal_node = depth_first_tree_search(problem)
+    
+    print(goal_node.state.board.get_size(), goal_node.state.board.print_board(board))
+    
     pass
-
