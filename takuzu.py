@@ -111,10 +111,8 @@ class Board:
                     row.append(int(char))
             
             board.append(row)
-
-        new_Board = Board(board)
         
-        return new_Board
+        return Board(board)
 
 # TODO: outros metodos da classe
     def change_value(self, row: int, col: int, value: int):
@@ -381,13 +379,13 @@ class Takuzu(Problem):
         
         return result_state
 
-    def goal_test(self, state: TakuzuState): # ERRADO
+    def goal_test(self, state: TakuzuState):
         """Retorna True se e só se o estado passado como argumento e
         um estado objetivo. Deve verificar se todas as posicoes do tabuleiro
         estao preenchidas com uma sequencia de números adjacentes."""
-        newBoard = Board(state.board.board)
-        for i in range(newBoard.size):
-            for j in range(newBoard.size):
+                
+        for i in range(state.board.size):
+            for j in range(state.board.size):
                 num = state.board.get_number(i, j)
                 a_h_num = state.board.adjacent_horizontal_numbers(i, j)
                 a_v_num = state.board.adjacent_vertical_numbers(i, j)
