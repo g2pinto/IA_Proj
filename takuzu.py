@@ -7,6 +7,7 @@
 # 98876 Tomas Cayatte
 
 import time
+import copy
 import sys
 from search import (
     Node, 
@@ -117,6 +118,7 @@ class Board:
 # TODO: outros metodos da classe
     def change_value(self, row: int, col: int, value: int):
         self.board[row][col] = value
+        self.toFill -= 1
     
     def double_adjacent_up(self, row: int, col: int):
         """ Devolve os dois valores imediatamente acima """
@@ -249,20 +251,30 @@ class Takuzu(Problem):
         partir do estado passado como argumento."""
         actions = []
         if state.board.toFill == 0:
-            return ()
+            return []
+        
         for row in range(state.board.size):
-            available = [True, True] # true if zero is possible, if one is possible
             for col in range(state.board.size):
+                available = [True, True]
+                # true if zero is possible, if one is possible
                 # SKIP ALREADY FILLED POSITIONS
                 if state.board.get_number(row, col) != 2:
                     continue
 
                 # THE NUMBER OF ONES AND ZEROS (IN THE COL) SHOULD BE SIZE/2
                 column_tuple = state.board.describe_col(col) #(0s, 1s, 2s)
-                if (column_tuple[0] >= state.board.size/2):
-                    available[0] = False
-                if (column_tuple[1] >= state.board.size/2):
-                    available[1] = False
+                if state.board.size%2 == 0:                    
+                    if (column_tuple[0] >= state.board.size/2):
+                        available[0] = False
+                    if (column_tuple[1] >= state.board.size/2):
+                        available[1] = False
+                        
+                else:                   
+                    if (column_tuple[0] >= state.board.size//2 + 1):
+                        available[0] = False
+                    if (column_tuple[1] >= state.board.size//2 + 1):
+                        available[1] = False
+                
                 if (not self.still_possible(available)):
                     continue
 
@@ -272,34 +284,18 @@ class Takuzu(Problem):
 
                 # THE NUMBER OF ONES AND ZEROS (IN THE ROW) SHOULD BE SIZE/2
                 row_tuple = state.board.describe_row(row)
-                if (row_tuple[0] >= state.board.size/2):
-                    available[0] = False
-                if (row_tuple[1] >= state.board.size/2):
-                    available[1] = False
-                if (not self.still_possible(available)):
-                    continue
-
-                # VERIFICAR LINHAS IGUAIS
-                if (row_tuple[2] == 1):
-                    possible_row = state.board.board[row]
-                    possible_row[col] = 0
-                    if (state.board.equal_row(possible_row)):
+                if state.board.size%2 == 0:                    
+                    if (row_tuple[0] >= state.board.size/2):
                         available[0] = False
-                    possible_row[col] = 1
-                    if (state.board.equal_row(possible_row)):
+                    if (row_tuple[1] >= state.board.size/2):
                         available[1] = False
-                if (not self.still_possible(available)):
-                    continue
-                    
-                # VERIFICAR COLUNAS IGUAIS
-                if (column_tuple[2] == 1):
-                    possible_col = state.board.get_col(col)
-                    possible_col[row] = 0
-                    if (state.board.equal_row(possible_col)):
+                        
+                else:                   
+                    if (row_tuple[0] >= state.board.size//2 + 1):
                         available[0] = False
-                    possible_col[row] = 1
-                    if (state.board.equal_row(possible_col)):
+                    if (row_tuple[1] >= state.board.size//2 + 1):
                         available[1] = False
+                        
                 if (not self.still_possible(available)):
                     continue
 
@@ -361,11 +357,36 @@ class Takuzu(Problem):
                 if (not self.still_possible(available)):
                     continue
                 
+                # VERIFICAR LINHAS IGUAIS
+                if (row_tuple[2] == 1):
+                    possible_row = state.board.get_row(row)[:]
+                    possible_row[col] = 0
+                    if (state.board.equal_row(possible_row)):
+                        available[0] = False
+                    possible_row[col] = 1
+                    if (state.board.equal_row(possible_row)):
+                        available[1] = False
+                if (not self.still_possible(available)):
+                    continue
+                    
+                # VERIFICAR COLUNAS IGUAIS
+                if (column_tuple[2] == 1):
+                    possible_col = state.board.get_col(col)[:]
+                    possible_col[row] = 0
+                    if (state.board.equal_row(possible_col)):
+                        available[0] = False
+                    possible_col[row] = 1
+                    if (state.board.equal_row(possible_col)):
+                        available[1] = False
+                if (not self.still_possible(available)):
+                    continue
+                
                 # ADICIONA ACOES POSSIVEIS
-                if (available[0]):
+                if (available[0] and not available[1]):
                     actions.append((row, col, 0))
-                if (available[1]):
+                if (available[1] and not available[0]):
                     actions.append((row, col, 1))
+                    
         return actions
 
     def result(self, state: TakuzuState, action):
@@ -373,7 +394,7 @@ class Takuzu(Problem):
         'state' passado como argumento. A acao a executar deve ser uma
         das presentes na lista obtida pela execucao de
         self.actions(state)."""
-        result_state = state
+        result_state = copy.deepcopy(state)
         result_state.board.change_value(action[0], action[1], action[2])
         
         return result_state
@@ -387,7 +408,7 @@ class Takuzu(Problem):
                 num = state.board.get_number(i, j)
                 a_h_num = state.board.adjacent_horizontal_numbers(i, j)
                 a_v_num = state.board.adjacent_vertical_numbers(i, j)
-            
+                
                 if a_h_num[0] == num == a_h_num[1] or a_v_num[0] == num == a_v_num[1]:
                     return False
                     
@@ -396,15 +417,12 @@ class Takuzu(Problem):
                 if not (state.board.size/2 == row_desc[0] == row_desc[1]):
                     return False
             else:
-                if (state.board.size//2 == row_desc[0] and row_desc[0] == row_desc[1]+1 or state.board.size//2 == row_desc[1] and row_desc[1] == row_desc[0]+1):
+                if not (state.board.size//2 == row_desc[0] and row_desc[0] == row_desc[1]-1 or state.board.size//2 == row_desc[1] and row_desc[1] == row_desc[0]-1):
                     return False
         
         for i in range(state.board.size):
             for j in range(i + 1, state.board.size):
-                if state.board.get_row(i) == state.board.get_row(j):
-                    return False
-        
-                if state.board.get_col(i) == state.board.get_col(j):
+                if state.board.get_row(i) == state.board.get_row(j) or state.board.get_col(i) == state.board.get_col(j):
                     return False
         
         return True                  
@@ -415,8 +433,10 @@ class Takuzu(Problem):
         
         for i in range(node.state.board.size):
             desc_row = node.state.board.describe_row(i)
+            desc_col = node.state.board.describe_col(i)
             h += desc_row[2] * 5
-            h += abs(desc_row[0] - desc_row[1]) * 15
+            #h += abs(desc_row[0] - desc_row[1]) * 15
+            #h += abs(desc_col[0] - desc_col[1]) * 15
             
         return h
 
@@ -433,20 +453,22 @@ if __name__ == "__main__":
     # Retirar a solucao a partir do nó resultante,
     # Imprimir para o standard output no formato indicado. 
     
-    '''tests = ['testes-takuzu/input_T01', 'testes-takuzu/input_T02', 'testes-takuzu/input_T03', 'testes-takuzu/input_T04', 'testes-takuzu/input_T05', \
-        'testes-takuzu/input_T06', 'testes-takuzu/input_T07', 'testes-takuzu/input_T08', 'testes-takuzu/input_T09', 'testes-takuzu/input_T10', \
-        'testes-takuzu/input_T11', 'testes-takuzu/input_T12']
+    #tests = ['testes-takuzu/input_T01', 'testes-takuzu/input_T02', \
+    #    'testes-takuzu/input_T07', 'testes-takuzu/input_T08', 'testes-takuzu/input_T09', 'testes-takuzu/input_T10', \
+    #    'testes-takuzu/input_T11', 'testes-takuzu/input_T12']
+    #
+    #for i in range(8):
+    #    start_time = time.time() 
+    #    
+    #    board = Board.parse_instance_from_stdin(tests[i])
+    #    problem = Takuzu(board)
+    #    
+    #    goal_node = depth_first_tree_search(problem)
+    #    
+    #    goal_node.state.board.print_board()
+    #    print(time.time() - start_time, "seconds")
     
-    for i in range(12):
-        start_time = time.time() 
-        
-        board = Board.parse_instance_from_stdin(tests[i])
-        problem = Takuzu(board)
-        
-        goal_node = astar_search(problem)
-        
-        print(time.time() - start_time, "seconds")
-    '''
+    
     
     file = sys.argv[1]
     board = Board.parse_instance_from_stdin(file)
@@ -454,6 +476,12 @@ if __name__ == "__main__":
     
     goal_node = depth_first_tree_search(problem)
     
-    print(goal_node.state.board.get_size(), goal_node.state.board.print_board(board))
+    goal_node.state.board.print_board()
     
-    pass
+    
+    
+    #board = Board.parse_instance_from_stdin('testes-takuzu/output_T04')
+    #board.print_board()
+    #problem = Takuzu(board)
+    #
+    #print(problem.goal_test(problem.initial))
