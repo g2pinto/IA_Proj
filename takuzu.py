@@ -246,6 +246,7 @@ class Takuzu(Problem):
             
         actions = []
         for row in range(state.board.size):
+            row_tuple = state.board.describe_row(row)
             for col in range(state.board.size):
                 # SKIP ALREADY FILLED POSITIONS
                 if state.board.get_number(row, col) != 2:
@@ -356,27 +357,27 @@ class Takuzu(Problem):
                 # THE NUMBER OF ONES AND ZEROS (IN THE ROW) SHOULD BE SIZE/2
                 _tuple = state.board.describe_row(row)
                 if state.board.size%2 == 0:                    
-                    if (_tuple[0] >= state.board.size/2):
+                    if (row_tuple[0] >= state.board.size/2):
                         #actions.append((row, col, 1))
                         #print([(row, col, 1)])
                         return [(row, col, 1)]
-                    if (_tuple[1] >= state.board.size/2):
+                    if (row_tuple[1] >= state.board.size/2):
                         #actions.append((row, col, 0))
                         #print([(row, col, 0)])
                         return [(row, col, 0)]  
                     
                 else:                   
-                    if (_tuple[0] >= state.board.size//2 + 1):
+                    if (row_tuple[0] >= state.board.size//2 + 1):
                         #actions.append((row, col, 1))
                         #print([(row, col, 1)])
                         return [(row, col, 1)]
-                    if (_tuple[1] >= state.board.size//2 + 1):
+                    if (row_tuple[1] >= state.board.size//2 + 1):
                         #actions.append((row, col, 0))
                         #print([(row, col, 0)])
                         return [(row, col, 0)]
                     
                 # VERIFICAR LINHAS IGUAIS
-                if (_tuple[2] == 1):
+                if (row_tuple[2] == 1):
                     possible_row = state.board.get_row(row)[:]
                     possible_row[col] = 0
                     if (state.board.equal_row(possible_row)):
