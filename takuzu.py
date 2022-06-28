@@ -390,7 +390,8 @@ class Takuzu(Problem):
                 #    actions.append((row, col, 0))
                 #if (available[1] and not available[0]):
                 #    actions.append((row, col, 1))
-                    
+                
+        print(actions)
         return actions
 
     def result(self, state: TakuzuState, action):
@@ -456,7 +457,7 @@ if __name__ == "__main__":
     # Retirar a solucao a partir do nó resultante,
     # Imprimir para o standard output no formato indicado. 
         
-    start_time = time.time() 
+    #start_time = time.time() 
     
     board = Board.parse_instance_from_stdin()
     problem = Takuzu(board)
@@ -465,4 +466,20 @@ if __name__ == "__main__":
     
     goal_node.state.board.print_board()
     
-    print(time.time() - start_time, "seconds")
+    #print(time.time() - start_time, "seconds")
+    
+    
+    
+
+
+#para testar, em vez de printar actions, printar as posicoes com 2
+
+#nas actions verificar se linha vai ficar igual
+
+#actions podem ser atributo do board
+#action arg do result e removida de actions
+#simula-se actions para novo valor
+#adicionam-se a actions
+#quando actions ficar vazio ativa-se go search
+
+#guardar posicoes por preencher
