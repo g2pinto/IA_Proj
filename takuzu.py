@@ -231,8 +231,7 @@ class Board:
             print('\t'.join(map(str, self.board[i])))
             
             i += 1
-            if i < self.size:
-                print('\n')
+            print('\n')
 
 
 
@@ -413,6 +412,10 @@ class Takuzu(Problem):
                 if a_h_num[0] == num == a_h_num[1] or a_v_num[0] == num == a_v_num[1]:
                     return False
                     
+                if j > i:
+                    if state.board.get_row(i) == state.board.get_row(j) or state.board.get_col(i) == state.board.get_col(j):
+                        return False
+        
             row_desc = state.board.describe_row(i)
             if state.board.size%2 == 0:
                 if not (state.board.size/2 == row_desc[0] == row_desc[1]):
@@ -420,12 +423,7 @@ class Takuzu(Problem):
             else:
                 if not (state.board.size//2 == row_desc[0] and row_desc[0] == row_desc[1]-1 or state.board.size//2 == row_desc[1] and row_desc[1] == row_desc[0]-1):
                     return False
-        
-        for i in range(state.board.size):
-            for j in range(i + 1, state.board.size):
-                if state.board.get_row(i) == state.board.get_row(j) or state.board.get_col(i) == state.board.get_col(j):
-                    return False
-        
+            
         return True                  
               
     def h(self, node: Node):
@@ -435,9 +433,9 @@ class Takuzu(Problem):
         for i in range(node.state.board.size):
             desc_row = node.state.board.describe_row(i)
             desc_col = node.state.board.describe_col(i)
-            #h += desc_row[2] * 5
-            #h += abs(desc_row[0] - desc_row[1]) * 15
-            #h += abs(desc_col[0] - desc_col[1]) * 15
+            h += desc_row[2] * 5
+            h += abs(desc_row[0] - desc_row[1]) * 15
+            h += abs(desc_col[0] - desc_col[1]) * 15
             
         return h
 
@@ -453,21 +451,8 @@ if __name__ == "__main__":
     # Usar uma tecnica de procura para resolver a instância,
     # Retirar a solucao a partir do nó resultante,
     # Imprimir para o standard output no formato indicado. 
-    
-    #tests = ['testes-takuzu/input_T01', 'testes-takuzu/input_T02', \
-    #    'testes-takuzu/input_T07', 'testes-takuzu/input_T08', 'testes-takuzu/input_T09', 'testes-takuzu/input_T10', \
-    #    'testes-takuzu/input_T11', 'testes-takuzu/input_T12']
-    #
-    #for i in range(8):
-    #    start_time = time.time() 
-    #    
-    #    board = Board.parse_instance_from_stdin(tests[i])
-    #    problem = Takuzu(board)
-    #    
-    #    goal_node = depth_first_tree_search(problem)
-    #    
-    #    goal_node.state.board.print_board()
-    #    print(time.time() - start_time, "seconds")
+        
+    start_time = time.time() 
     
     board = Board.parse_instance_from_stdin()
     problem = Takuzu(board)
@@ -476,10 +461,4 @@ if __name__ == "__main__":
     
     goal_node.state.board.print_board()
     
-    
-    
-    #board = Board.parse_instance_from_stdin('testes-takuzu/output_T04')
-    #board.print_board()
-    #problem = Takuzu(board)
-    #
-    #print(problem.goal_test(problem.initial))
+    print(time.time() - start_time, "seconds")
