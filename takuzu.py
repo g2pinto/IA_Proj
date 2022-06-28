@@ -255,8 +255,6 @@ class Takuzu(Problem):
         
         for row in range(state.board.size):
             for col in range(state.board.size):
-                available = [True, True]
-                # true if zero is possible, if one is possible
                 # SKIP ALREADY FILLED POSITIONS
                 if state.board.get_number(row, col) != 2:
                     continue
@@ -265,18 +263,20 @@ class Takuzu(Problem):
                 column_tuple = state.board.describe_col(col) #(0s, 1s, 2s)
                 if state.board.size%2 == 0:                    
                     if (column_tuple[0] >= state.board.size/2):
-                        available[0] = False
+                        actions.append((row, col, 1))
+                        continue
                     if (column_tuple[1] >= state.board.size/2):
-                        available[1] = False
+                        actions.append((row, col, 0))
+                        continue
                         
                 else:                   
                     if (column_tuple[0] >= state.board.size//2 + 1):
-                        available[0] = False
+                        actions.append((row, col, 1))
+                        continue
                     if (column_tuple[1] >= state.board.size//2 + 1):
-                        available[1] = False
+                        actions.append((row, col, 0))
+                        continue
                 
-                if (not self.still_possible(available)):
-                    continue
 
                 # TODO - se numero de zeros = size/2 meter um 1 é sempre acao (?)
                 # TODO - se numero de uns = size/2 meter um 0 é sempre acao (?)
@@ -286,106 +286,110 @@ class Takuzu(Problem):
                 row_tuple = state.board.describe_row(row)
                 if state.board.size%2 == 0:                    
                     if (row_tuple[0] >= state.board.size/2):
-                        available[0] = False
+                        actions.append((row, col, 1))
+                        continue
                     if (row_tuple[1] >= state.board.size/2):
-                        available[1] = False
-                        
+                        actions.append((row, col, 0))
+                        continue   
                 else:                   
                     if (row_tuple[0] >= state.board.size//2 + 1):
-                        available[0] = False
+                        actions.append((row, col, 1))
+                        continue
                     if (row_tuple[1] >= state.board.size//2 + 1):
-                        available[1] = False
+                        actions.append((row, col, 0))
+                        continue
                         
-                if (not self.still_possible(available)):
-                    continue
 
                 # CHECK IF ADJACENT VERTICAL VALUES ARE ALREADY THE SAME
                 adjacent_vertical = state.board.adjacent_vertical_numbers(row, col)
                 if (adjacent_vertical[0] == adjacent_vertical[1]):
                     if (adjacent_vertical[0] == 0):
-                        available[0] = False
+                        actions.append((row, col, 1))
+                        continue
                     elif (adjacent_vertical[0] == 1):
-                        available[1] = False
+                        actions.append((row, col, 0))
+                        continue
                 
                 # CHECK IF ADJACENT HORIZONTAL VALUES ARE ALREADY THE SAME
                 adjacent_horizontal = state.board.adjacent_horizontal_numbers(row, col)
                 if (adjacent_horizontal[0] == adjacent_horizontal[1]):
                     if (adjacent_horizontal[0] == 0):
-                        available[0] = False
+                        actions.append((row, col, 1))
+                        continue
                     elif (adjacent_horizontal[0] == 1):
-                        available[1] = False
-                if (not self.still_possible(available)):
-                    continue
+                        actions.append((row, col, 0))
+                        continue
 
                 # CHECK IF DOWN VALUES ARE ALREADY DOUBLED
                 double_down = state.board.double_adjacent_down(row, col)
                 if (double_down[0] == double_down[1]):
                     if (double_down[0] == 0):
-                        available[0] = False
+                        actions.append((row, col, 1))
+                        continue
                     elif (double_down[0] == 1):
-                        available[1] = False
-                if (not self.still_possible(available)):
-                    continue
+                        actions.append((row, col, 0))
+                        continue
 
                 # CHECK IF UP VALUES ARE ALREADY DOUBLED
                 double_up = state.board.double_adjacent_up(row, col)
                 if (double_up[0] == double_up[1]):
                     if (double_up[0] == 0):
-                        available[0] = False
+                        actions.append((row, col, 1))
+                        continue
                     elif (double_up[0] == 1):
-                        available[1] = False
-                if (not self.still_possible(available)):
-                    continue
+                        actions.append((row, col, 0))
+                        continue
                 
                 # CHECK IF RIGHT VALUES ARE ALREADY DOUBLED
                 double_right = state.board.double_adjacent_right(row, col)
                 if (double_right[0] == double_right[1]):
                     if (double_right[0] == 0):
-                        available[0] = False
+                        actions.append((row, col, 1))
+                        continue
                     elif (double_right[0] == 1):
-                        available[1] = False
-                if (not self.still_possible(available)):
-                    continue
+                        actions.append((row, col, 0))
+                        continue
                 
                 # CHECK IF LEFT VALUES ARE ALREADY DOUBLED
                 double_left = state.board.double_adjacent_left(row, col)
                 if (double_left[0] == double_left[1]):
                     if (double_left[0] == 0):
-                        available[0] = False
+                        actions.append((row, col, 1))
+                        continue
                     elif (double_left[0] == 1):
-                        available[1] = False
-                if (not self.still_possible(available)):
-                    continue
+                        actions.append((row, col, 0))
+                        continue
+
                 
                 # VERIFICAR LINHAS IGUAIS
                 if (row_tuple[2] == 1):
                     possible_row = state.board.get_row(row)[:]
                     possible_row[col] = 0
                     if (state.board.equal_row(possible_row)):
-                        available[0] = False
+                        actions.append((row, col, 1))
+                        continue
                     possible_row[col] = 1
                     if (state.board.equal_row(possible_row)):
-                        available[1] = False
-                if (not self.still_possible(available)):
-                    continue
+                        actions.append((row, col, 0))
+                        continue
                     
                 # VERIFICAR COLUNAS IGUAIS
                 if (column_tuple[2] == 1):
                     possible_col = state.board.get_col(col)[:]
                     possible_col[row] = 0
                     if (state.board.equal_row(possible_col)):
-                        available[0] = False
+                        actions.append((row, col, 1))
+                        continue
                     possible_col[row] = 1
                     if (state.board.equal_row(possible_col)):
-                        available[1] = False
-                if (not self.still_possible(available)):
-                    continue
+                        actions.append((row, col, 0))
+                        continue
                 
                 # ADICIONA ACOES POSSIVEIS
-                if (available[0] and not available[1]):
-                    actions.append((row, col, 0))
-                if (available[1] and not available[0]):
-                    actions.append((row, col, 1))
+                #if (available[0] and not available[1]):
+                #    actions.append((row, col, 0))
+                #if (available[1] and not available[0]):
+                #    actions.append((row, col, 1))
                     
         return actions
 
