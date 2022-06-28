@@ -46,7 +46,6 @@ class Board:
         self.board = board
         self.size = len(board[0])
         self.toFill = 0
-        self.actions = []
         
         for i in range(len(board)):
             for j in range(len(board[i])):
