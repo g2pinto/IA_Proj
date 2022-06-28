@@ -45,12 +45,9 @@ class Board:
     def __init__(self, board):
         self.board = board
         self.size = len(board[0])
-        self.toFill = 0
         
-        for i in range(len(board)):
-            for j in range(len(board[i])):
-                if board[i][j] == 2:
-                    self.toFill += 1
+        empties = [board[i][j] for i in range(self.size) for j in range(self.size) if board[i][j]==2]
+        self.toFill = len(empties)
 
     def get_size(self):
         return self.size
@@ -215,10 +212,8 @@ class Board:
                 return True
     
     def get_col(self, col_num):
-        col = []
-        for i in range(self.size):
-            col.append(self.board[i][col_num])
-        return col
+        return [self.board[i][col_num] for i in range(self.size)]
+
         
     def equal_col(self, col):
         for i in range(self.size):
