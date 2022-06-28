@@ -46,7 +46,7 @@ class Board:
         self.board = board
         self.size = len(board[0])
         
-        empties = [board[i][j] for i in range(self.size) for j in range(self.size) if board[i][j]==2]
+        empties = [self.get_number(i, j) for i in range(self.size) for j in range(self.size) if self.get_number(i, j) == 2]
         self.toFill = len(empties)
 
     def get_size(self):
@@ -62,12 +62,12 @@ class Board:
         if (row - 1 < 0):
             up_adj = None
         else:
-            up_adj = self.board[row - 1][col]
+            up_adj = self.get_number(row - 1, col)
 
         if (row >= self.size - 1):
             down_adj = None
         else:
-            down_adj = self.board[row + 1][col]
+            down_adj = self.get_number(row + 1, col)
         
         return (down_adj, up_adj)        
 
@@ -76,12 +76,12 @@ class Board:
         if (col - 1 < 0):
             down_adj = None
         else:
-            down_adj = self.board[row][col - 1]
+            down_adj = self.get_number(row, col - 1)
 
         if (col >= self.size - 1):
             up_adj = None
         else:
-            up_adj = self.board[row][col + 1]
+            up_adj = self.get_number(row, col + 1)
         
         return (down_adj, up_adj)  
 
@@ -123,12 +123,12 @@ class Board:
         if (row + 1 >= self.size):
             up_adj = None
         else:
-            up_adj = self.board[row + 1][col]
+            up_adj = self.get_number(row + 1, col)
             
         if (row + 2 >= self.size):
             up_next_adj = None
         else:
-            up_next_adj = self.board[row + 2][col]
+            up_next_adj = self.get_number(row + 2, col)
             
         return (up_adj, up_next_adj)
 
@@ -137,12 +137,12 @@ class Board:
         if (row - 1 < 0):
             down_adj = None
         else:
-            down_adj = self.board[row - 1][col]
+            down_adj = self.get_number(row - 1, col)
             
         if (row - 2 < 0 ):
             down_next_adj = None
         else:
-            down_next_adj = self.board[row - 2][col]
+            down_next_adj = self.get_number(row - 2, col)
             
         return (down_adj, down_next_adj)
 
@@ -151,12 +151,12 @@ class Board:
         if (col + 1 >= self.size):
             right_adj = None
         else:
-            right_adj = self.board[row][col + 1]
+            right_adj = self.get_number(row, col + 1)
             
         if (col + 2 >= self.size):
             right_next_adj = None
         else:
-            right_next_adj = self.board[row][col + 2]
+            right_next_adj = self.get_number(row, col + 2)
         
         return (right_adj, right_next_adj)
     
@@ -165,11 +165,11 @@ class Board:
         if (col - 1 < 0):
             left_adj = None
         else:
-            left_adj = self.board[row][col - 1]
+            left_adj = self.get_number(row, col - 1)
         if (col - 2 < 0):
             left_next_adj = None
         else:
-            left_next_adj = self.board[row][col - 2]
+            left_next_adj = self.get_number(row, col - 2) 
         return (left_adj, left_next_adj)
         
     def describe_row(self, row):
@@ -178,7 +178,7 @@ class Board:
         count_1 = 0
         count_2 = 0
         for i in range(self.size):
-            val = self.board[row][i]
+            val = self.get_number(row, i) 
             if (val == 0):
                 count_0 += 1
             elif (val == 1):
@@ -193,7 +193,7 @@ class Board:
         count_1 = 0
         count_2 = 0
         for i in range(self.size):
-            val = self.board[i][col] 
+            val = self.get_number(i, col) 
             if (val == 0):
                 count_0 += 1
             elif (val == 1):
@@ -208,11 +208,11 @@ class Board:
 
     def equal_row(self, row):
         for i in range(self.size):
-            if self.board[i] == row:
+            if self.get_row(i) == row:
                 return True
     
     def get_col(self, col_num):
-        return [self.board[i][col_num] for i in range(self.size)]
+        return [self.get_number(i, col_num) for i in range(self.size)]
 
         
     def equal_col(self, col):
@@ -223,9 +223,8 @@ class Board:
     def print_board(self):
         i = 0
         while i < self.size:
-            print('\t'.join(map(str, self.board[i])))            
+            print('\t'.join(map(str, self.get_row(i))))            
             i += 1
-
 
 
 
@@ -242,10 +241,10 @@ class Takuzu(Problem):
     def actions(self, state: TakuzuState):
         """Retorna uma lista de acoes que podem ser executadas a
         partir do estado passado como argumento."""
-        actions = []
         if state.board.toFill == 0:
             return []
         
+        actions = []
         for row in range(state.board.size):
             for col in range(state.board.size):
                 # SKIP ALREADY FILLED POSITIONS
@@ -253,131 +252,166 @@ class Takuzu(Problem):
                     continue
 
                 # THE NUMBER OF ONES AND ZEROS (IN THE COL) SHOULD BE SIZE/2
-                column_tuple = state.board.describe_col(col) #(0s, 1s, 2s)
+                _tuple = state.board.describe_col(col) #(0s, 1s, 2s)
                 if state.board.size%2 == 0:                    
-                    if (column_tuple[0] >= state.board.size/2):
-                        actions.append((row, col, 1))
-                        return actions
-                    if (column_tuple[1] >= state.board.size/2):
-                        actions.append((row, col, 0))
-                        return actions
+                    if (_tuple[0] >= state.board.size/2):
+                        #actions.append((row, col, 1))
+                        #if (row, col) == (5, 8):
+                            #print("erro 1")
+                        #print([(row, col, 1)])
+                        return [(row, col, 1)]
+                    if (_tuple[1] >= state.board.size/2):
+                        #actions.append((row, col, 0))
+                        #if (row, col) == (5, 8):
+                            #print("erro 2")
+                        #print([(row, col, 0)])
+                        return [(row, col, 0)]
                         
                 else:                   
-                    if (column_tuple[0] >= state.board.size//2 + 1):
-                        actions.append((row, col, 1))
-                        return actions
-                    if (column_tuple[1] >= state.board.size//2 + 1):
-                        actions.append((row, col, 0))
-                        return actions
+                    if (_tuple[0] >= state.board.size//2 + 1):
+                        #actions.append((row, col, 1))
+                        #if (row, col) == (5, 8):
+                            #print("erro 3")
+                        #print([(row, col, 1)])
+                        return [(row, col, 1)]
+                    if (_tuple[1] >= state.board.size//2 + 1):
+                        #actions.append((row, col, 0))
+                        #if (row, col) == (5, 8):
+                            #print("erro 4")
+                        #print([(row, col, 0)])
+                        return [(row, col, 0)]
                 
+                # VERIFICAR COLUNAS IGUAIS
+                if (_tuple[2] == 1):
+                    possible_col = state.board.get_col(col)[:]
+                    possible_col[row] = 0
+                    if (state.board.equal_col(possible_col)):
+                        #actions.append((row, col, 1))
+                        #if (row, col) == (5, 8):
+                            #print("erro 5")
+                        #print([(row, col, 1)])
+                        return [(row, col, 1)]
+                    possible_col[row] = 1
+                    if (state.board.equal_col(possible_col)):
+                        #actions.append((row, col, 0))
+                        #if (row, col) == (5, 8):
+                            #print("erro 6")
+                        #print([(row, col, 0)])
+                        return [(row, col, 0)]
 
                 # TODO - se numero de zeros = size/2 meter um 1 é sempre acao (?)
                 # TODO - se numero de uns = size/2 meter um 0 é sempre acao (?)
                 # só necessário para problemas de tempo, i think
 
                 # THE NUMBER OF ONES AND ZEROS (IN THE ROW) SHOULD BE SIZE/2
-                row_tuple = state.board.describe_row(row)
+                _tuple = state.board.describe_row(row)
                 if state.board.size%2 == 0:                    
-                    if (row_tuple[0] >= state.board.size/2):
-                        actions.append((row, col, 1))
-                        return actions
-                    if (row_tuple[1] >= state.board.size/2):
-                        actions.append((row, col, 0))
-                        return actions   
+                    if (_tuple[0] >= state.board.size/2):
+                        #actions.append((row, col, 1))
+                        #print([(row, col, 1)])
+                        return [(row, col, 1)]
+                    if (_tuple[1] >= state.board.size/2):
+                        #actions.append((row, col, 0))
+                        #print([(row, col, 0)])
+                        return [(row, col, 0)]  
+                    
                 else:                   
-                    if (row_tuple[0] >= state.board.size//2 + 1):
-                        actions.append((row, col, 1))
-                        return actions
-                    if (row_tuple[1] >= state.board.size//2 + 1):
-                        actions.append((row, col, 0))
-                        return actions
-                        
-
-                # CHECK IF ADJACENT VERTICAL VALUES ARE ALREADY THE SAME
-                adjacent_vertical = state.board.adjacent_vertical_numbers(row, col)
-                if (adjacent_vertical[0] == adjacent_vertical[1]):
-                    if (adjacent_vertical[0] == 0):
-                        actions.append((row, col, 1))
-                        return actions
-                    elif (adjacent_vertical[0] == 1):
-                        actions.append((row, col, 0))
-                        return actions
-                
-                # CHECK IF ADJACENT HORIZONTAL VALUES ARE ALREADY THE SAME
-                adjacent_horizontal = state.board.adjacent_horizontal_numbers(row, col)
-                if (adjacent_horizontal[0] == adjacent_horizontal[1]):
-                    if (adjacent_horizontal[0] == 0):
-                        actions.append((row, col, 1))
-                        return actions
-                    elif (adjacent_horizontal[0] == 1):
-                        actions.append((row, col, 0))
-                        return actions
-
-                # CHECK IF DOWN VALUES ARE ALREADY DOUBLED
-                double_down = state.board.double_adjacent_down(row, col)
-                if (double_down[0] == double_down[1]):
-                    if (double_down[0] == 0):
-                        actions.append((row, col, 1))
-                        return actions
-                    elif (double_down[0] == 1):
-                        actions.append((row, col, 0))
-                        return actions
-
-                # CHECK IF UP VALUES ARE ALREADY DOUBLED
-                double_up = state.board.double_adjacent_up(row, col)
-                if (double_up[0] == double_up[1]):
-                    if (double_up[0] == 0):
-                        actions.append((row, col, 1))
-                        return actions
-                    elif (double_up[0] == 1):
-                        actions.append((row, col, 0))
-                        return actions
-                
-                # CHECK IF RIGHT VALUES ARE ALREADY DOUBLED
-                double_right = state.board.double_adjacent_right(row, col)
-                if (double_right[0] == double_right[1]):
-                    if (double_right[0] == 0):
-                        actions.append((row, col, 1))
-                        return actions
-                    elif (double_right[0] == 1):
-                        actions.append((row, col, 0))
-                        return actions
-                
-                # CHECK IF LEFT VALUES ARE ALREADY DOUBLED
-                double_left = state.board.double_adjacent_left(row, col)
-                if (double_left[0] == double_left[1]):
-                    if (double_left[0] == 0):
-                        actions.append((row, col, 1))
-                        return actions
-                    elif (double_left[0] == 1):
-                        actions.append((row, col, 0))
-                        return actions
-
-                
+                    if (_tuple[0] >= state.board.size//2 + 1):
+                        #actions.append((row, col, 1))
+                        #print([(row, col, 1)])
+                        return [(row, col, 1)]
+                    if (_tuple[1] >= state.board.size//2 + 1):
+                        #actions.append((row, col, 0))
+                        #print([(row, col, 0)])
+                        return [(row, col, 0)]
+                    
                 # VERIFICAR LINHAS IGUAIS
-                if (row_tuple[2] == 1):
+                if (_tuple[2] == 1):
                     possible_row = state.board.get_row(row)[:]
                     possible_row[col] = 0
                     if (state.board.equal_row(possible_row)):
-                        actions.append((row, col, 1))
-                        return actions
+                        #actions.append((row, col, 1))
+                        #print([(row, col, 1)])
+                        return [(row, col, 1)]
                     possible_row[col] = 1
                     if (state.board.equal_row(possible_row)):
-                        actions.append((row, col, 0))
-                        return actions
-                    
-                # VERIFICAR COLUNAS IGUAIS
-                if (column_tuple[2] == 1):
-                    possible_col = state.board.get_col(col)[:]
-                    possible_col[row] = 0
-                    if (state.board.equal_row(possible_col)):
-                        actions.append((row, col, 1))
-                        return actions
-                    possible_col[row] = 1
-                    if (state.board.equal_row(possible_col)):
-                        actions.append((row, col, 0))
-                        return actions
+                        #actions.append((row, col, 0))
+                        #print([(row, col, 0)])
+                        return [(row, col, 0)]
+                        
+
+                # CHECK IF ADJACENT VERTICAL VALUES ARE ALREADY THE SAME
+                _tuple = state.board.adjacent_vertical_numbers(row, col)
+                if (_tuple[0] == _tuple[1]):
+                    if (_tuple[0] == 0):
+                        #actions.append((row, col, 1))
+                        #print([(row, col, 1)])
+                        return [(row, col, 1)]
+                    elif (_tuple[0] == 1):
+                        #actions.append((row, col, 0))
+                        #print([(row, col, 0)])
+                        return [(row, col, 0)]
                 
+                # CHECK IF ADJACENT HORIZONTAL VALUES ARE ALREADY THE SAME
+                _tuple = state.board.adjacent_horizontal_numbers(row, col)
+                if (_tuple[0] == _tuple[1]):
+                    if (_tuple[0] == 0):
+                        #actions.append((row, col, 1))
+                        #print([(row, col, 1)])
+                        return [(row, col, 1)]
+                    elif (_tuple[0] == 1):
+                        #actions.append((row, col, 0))
+                        #print([(row, col, 0)])
+                        return [(row, col, 0)]
+
+                # CHECK IF DOWN VALUES ARE ALREADY DOUBLED
+                _tuple = state.board.double_adjacent_down(row, col)
+                if (_tuple[0] == _tuple[1]):
+                    if (_tuple[0] == 0):
+                        #actions.append((row, col, 1))
+                        #print([(row, col, 1)])
+                        return [(row, col, 1)]
+                    elif (_tuple[0] == 1):
+                        #actions.append((row, col, 0))
+                        #print([(row, col, 0)])
+                        return [(row, col, 0)]
+
+                # CHECK IF UP VALUES ARE ALREADY DOUBLED
+                _tuple = state.board.double_adjacent_up(row, col)
+                if (_tuple[0] == _tuple[1]):
+                    if (_tuple[0] == 0):
+                        #actions.append((row, col, 1))
+                        #print([(row, col, 1)])
+                        return [(row, col, 1)]
+                    elif (_tuple[0] == 1):
+                        #actions.append((row, col, 0))
+                        #print([(row, col, 0)])
+                        return [(row, col, 0)]
+                
+                # CHECK IF RIGHT VALUES ARE ALREADY DOUBLED
+                _tuple = state.board.double_adjacent_right(row, col)
+                if (_tuple[0] == _tuple[1]):
+                    if (_tuple[0] == 0):
+                        #actions.append((row, col, 1))
+                        #print([(row, col, 1)])
+                        return [(row, col, 1)]
+                    elif (_tuple[0] == 1):
+                        #actions.append((row, col, 0))
+                        #print([(row, col, 0)])
+                        return [(row, col, 0)]
+                
+                # CHECK IF LEFT VALUES ARE ALREADY DOUBLED
+                _tuple = state.board.double_adjacent_left(row, col)
+                if (_tuple[0] == _tuple[1]):
+                    if (_tuple[0] == 0):
+                        #actions.append((row, col, 1))
+                        #print([(row, col, 1)])
+                        return [(row, col, 1)]
+                    elif (_tuple[0] == 1):
+                        #actions.append((row, col, 0))
+                        #print([(row, col, 0)])
+                        return [(row, col, 0)]
+
                 # ADICIONA ACOES POSSIVEIS
                 actions.append((row, col, 0))
                 actions.append((row, col, 1))
@@ -426,7 +460,6 @@ class Takuzu(Problem):
     def h(self, node: Node):
         """Funcao heuristica utilizada para a procura A*."""
         h = 0
-        
         for i in range(node.state.board.size):
             desc_row = node.state.board.describe_row(i)
             desc_col = node.state.board.describe_col(i)
