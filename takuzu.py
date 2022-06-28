@@ -223,7 +223,7 @@ class Board:
     def print_board(self):
         i = 0
         while i < self.size:
-            print('\t'.join(map(str, self.board[i]))) 
+            print('\t'.join(map(str, self.board[i])))            
             i += 1
 
 
@@ -257,18 +257,18 @@ class Takuzu(Problem):
                 if state.board.size%2 == 0:                    
                     if (column_tuple[0] >= state.board.size/2):
                         actions.append((row, col, 1))
-                        continue
+                        return actions
                     if (column_tuple[1] >= state.board.size/2):
                         actions.append((row, col, 0))
-                        continue
+                        return actions
                         
                 else:                   
                     if (column_tuple[0] >= state.board.size//2 + 1):
                         actions.append((row, col, 1))
-                        continue
+                        return actions
                     if (column_tuple[1] >= state.board.size//2 + 1):
                         actions.append((row, col, 0))
-                        continue
+                        return actions
                 
 
                 # TODO - se numero de zeros = size/2 meter um 1 é sempre acao (?)
@@ -280,17 +280,17 @@ class Takuzu(Problem):
                 if state.board.size%2 == 0:                    
                     if (row_tuple[0] >= state.board.size/2):
                         actions.append((row, col, 1))
-                        continue
+                        return actions
                     if (row_tuple[1] >= state.board.size/2):
                         actions.append((row, col, 0))
-                        continue   
+                        return actions   
                 else:                   
                     if (row_tuple[0] >= state.board.size//2 + 1):
                         actions.append((row, col, 1))
-                        continue
+                        return actions
                     if (row_tuple[1] >= state.board.size//2 + 1):
                         actions.append((row, col, 0))
-                        continue
+                        return actions
                         
 
                 # CHECK IF ADJACENT VERTICAL VALUES ARE ALREADY THE SAME
@@ -298,60 +298,60 @@ class Takuzu(Problem):
                 if (adjacent_vertical[0] == adjacent_vertical[1]):
                     if (adjacent_vertical[0] == 0):
                         actions.append((row, col, 1))
-                        continue
+                        return actions
                     elif (adjacent_vertical[0] == 1):
                         actions.append((row, col, 0))
-                        continue
+                        return actions
                 
                 # CHECK IF ADJACENT HORIZONTAL VALUES ARE ALREADY THE SAME
                 adjacent_horizontal = state.board.adjacent_horizontal_numbers(row, col)
                 if (adjacent_horizontal[0] == adjacent_horizontal[1]):
                     if (adjacent_horizontal[0] == 0):
                         actions.append((row, col, 1))
-                        continue
+                        return actions
                     elif (adjacent_horizontal[0] == 1):
                         actions.append((row, col, 0))
-                        continue
+                        return actions
 
                 # CHECK IF DOWN VALUES ARE ALREADY DOUBLED
                 double_down = state.board.double_adjacent_down(row, col)
                 if (double_down[0] == double_down[1]):
                     if (double_down[0] == 0):
                         actions.append((row, col, 1))
-                        continue
+                        return actions
                     elif (double_down[0] == 1):
                         actions.append((row, col, 0))
-                        continue
+                        return actions
 
                 # CHECK IF UP VALUES ARE ALREADY DOUBLED
                 double_up = state.board.double_adjacent_up(row, col)
                 if (double_up[0] == double_up[1]):
                     if (double_up[0] == 0):
                         actions.append((row, col, 1))
-                        continue
+                        return actions
                     elif (double_up[0] == 1):
                         actions.append((row, col, 0))
-                        continue
+                        return actions
                 
                 # CHECK IF RIGHT VALUES ARE ALREADY DOUBLED
                 double_right = state.board.double_adjacent_right(row, col)
                 if (double_right[0] == double_right[1]):
                     if (double_right[0] == 0):
                         actions.append((row, col, 1))
-                        continue
+                        return actions
                     elif (double_right[0] == 1):
                         actions.append((row, col, 0))
-                        continue
+                        return actions
                 
                 # CHECK IF LEFT VALUES ARE ALREADY DOUBLED
                 double_left = state.board.double_adjacent_left(row, col)
                 if (double_left[0] == double_left[1]):
                     if (double_left[0] == 0):
                         actions.append((row, col, 1))
-                        continue
+                        return actions
                     elif (double_left[0] == 1):
                         actions.append((row, col, 0))
-                        continue
+                        return actions
 
                 
                 # VERIFICAR LINHAS IGUAIS
@@ -360,11 +360,11 @@ class Takuzu(Problem):
                     possible_row[col] = 0
                     if (state.board.equal_row(possible_row)):
                         actions.append((row, col, 1))
-                        continue
+                        return actions
                     possible_row[col] = 1
                     if (state.board.equal_row(possible_row)):
                         actions.append((row, col, 0))
-                        continue
+                        return actions
                     
                 # VERIFICAR COLUNAS IGUAIS
                 if (column_tuple[2] == 1):
@@ -372,17 +372,15 @@ class Takuzu(Problem):
                     possible_col[row] = 0
                     if (state.board.equal_row(possible_col)):
                         actions.append((row, col, 1))
-                        continue
+                        return actions
                     possible_col[row] = 1
                     if (state.board.equal_row(possible_col)):
                         actions.append((row, col, 0))
-                        continue
+                        return actions
                 
                 # ADICIONA ACOES POSSIVEIS
-                #if (available[0] and not available[1]):
-                #    actions.append((row, col, 0))
-                #if (available[1] and not available[0]):
-                #    actions.append((row, col, 1))
+                actions.append((row, col, 0))
+                actions.append((row, col, 1))
                 
         #print(actions)
         return actions
@@ -394,6 +392,7 @@ class Takuzu(Problem):
         self.actions(state)."""
         result_state = copy.deepcopy(state)
         result_state.board.change_value(action[0], action[1], action[2])
+        
         
         return result_state
 
@@ -431,9 +430,9 @@ class Takuzu(Problem):
         for i in range(node.state.board.size):
             desc_row = node.state.board.describe_row(i)
             desc_col = node.state.board.describe_col(i)
-            h += desc_row[2] * 5
-            h += abs(desc_row[0] - desc_row[1]) * 15
-            h += abs(desc_col[0] - desc_col[1]) * 15
+            h += desc_row[2] * 15
+            h += abs(desc_row[0] - desc_row[1]) * 5
+            h += abs(desc_col[0] - desc_col[1]) * 5
             
         return h
 
@@ -468,11 +467,5 @@ if __name__ == "__main__":
 #para testar, em vez de printar actions, printar as posicoes com 2
 
 #nas actions verificar se linha vai ficar igual
-
-#actions podem ser atributo do board
-#action arg do result e removida de actions
-#simula-se actions para novo valor
-#adicionam-se a actions
-#quando actions ficar vazio ativa-se go search
 
 #guardar posicoes por preencher
