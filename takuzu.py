@@ -243,102 +243,13 @@ class Takuzu(Problem):
         partir do estado passado como argumento."""
         if state.board.toFill == 0:
             return []
-        
+            
         actions = []
         for row in range(state.board.size):
             for col in range(state.board.size):
                 # SKIP ALREADY FILLED POSITIONS
                 if state.board.get_number(row, col) != 2:
                     continue
-
-                # THE NUMBER OF ONES AND ZEROS (IN THE COL) SHOULD BE SIZE/2
-                _tuple = state.board.describe_col(col) #(0s, 1s, 2s)
-                if state.board.size%2 == 0:                    
-                    if (_tuple[0] >= state.board.size/2):
-                        #actions.append((row, col, 1))
-                        #if (row, col) == (5, 8):
-                            #print("erro 1")
-                        #print([(row, col, 1)])
-                        return [(row, col, 1)]
-                    if (_tuple[1] >= state.board.size/2):
-                        #actions.append((row, col, 0))
-                        #if (row, col) == (5, 8):
-                            #print("erro 2")
-                        #print([(row, col, 0)])
-                        return [(row, col, 0)]
-                        
-                else:                   
-                    if (_tuple[0] >= state.board.size//2 + 1):
-                        #actions.append((row, col, 1))
-                        #if (row, col) == (5, 8):
-                            #print("erro 3")
-                        #print([(row, col, 1)])
-                        return [(row, col, 1)]
-                    if (_tuple[1] >= state.board.size//2 + 1):
-                        #actions.append((row, col, 0))
-                        #if (row, col) == (5, 8):
-                            #print("erro 4")
-                        #print([(row, col, 0)])
-                        return [(row, col, 0)]
-                
-                # VERIFICAR COLUNAS IGUAIS
-                if (_tuple[2] == 1):
-                    possible_col = state.board.get_col(col)[:]
-                    possible_col[row] = 0
-                    if (state.board.equal_col(possible_col)):
-                        #actions.append((row, col, 1))
-                        #if (row, col) == (5, 8):
-                            #print("erro 5")
-                        #print([(row, col, 1)])
-                        return [(row, col, 1)]
-                    possible_col[row] = 1
-                    if (state.board.equal_col(possible_col)):
-                        #actions.append((row, col, 0))
-                        #if (row, col) == (5, 8):
-                            #print("erro 6")
-                        #print([(row, col, 0)])
-                        return [(row, col, 0)]
-
-                # TODO - se numero de zeros = size/2 meter um 1 é sempre acao (?)
-                # TODO - se numero de uns = size/2 meter um 0 é sempre acao (?)
-                # só necessário para problemas de tempo, i think
-
-                # THE NUMBER OF ONES AND ZEROS (IN THE ROW) SHOULD BE SIZE/2
-                _tuple = state.board.describe_row(row)
-                if state.board.size%2 == 0:                    
-                    if (_tuple[0] >= state.board.size/2):
-                        #actions.append((row, col, 1))
-                        #print([(row, col, 1)])
-                        return [(row, col, 1)]
-                    if (_tuple[1] >= state.board.size/2):
-                        #actions.append((row, col, 0))
-                        #print([(row, col, 0)])
-                        return [(row, col, 0)]  
-                    
-                else:                   
-                    if (_tuple[0] >= state.board.size//2 + 1):
-                        #actions.append((row, col, 1))
-                        #print([(row, col, 1)])
-                        return [(row, col, 1)]
-                    if (_tuple[1] >= state.board.size//2 + 1):
-                        #actions.append((row, col, 0))
-                        #print([(row, col, 0)])
-                        return [(row, col, 0)]
-                    
-                # VERIFICAR LINHAS IGUAIS
-                if (_tuple[2] == 1):
-                    possible_row = state.board.get_row(row)[:]
-                    possible_row[col] = 0
-                    if (state.board.equal_row(possible_row)):
-                        #actions.append((row, col, 1))
-                        #print([(row, col, 1)])
-                        return [(row, col, 1)]
-                    possible_row[col] = 1
-                    if (state.board.equal_row(possible_row)):
-                        #actions.append((row, col, 0))
-                        #print([(row, col, 0)])
-                        return [(row, col, 0)]
-                        
 
                 # CHECK IF ADJACENT VERTICAL VALUES ARE ALREADY THE SAME
                 _tuple = state.board.adjacent_vertical_numbers(row, col)
@@ -412,6 +323,92 @@ class Takuzu(Problem):
                         #print([(row, col, 0)])
                         return [(row, col, 0)]
 
+                # THE NUMBER OF ONES AND ZEROS (IN THE COL) SHOULD BE SIZE/2
+                _tuple = state.board.describe_col(col) #(0s, 1s, 2s)
+                if state.board.size%2 == 0:                    
+                    if (_tuple[0] >= state.board.size/2):
+                        #actions.append((row, col, 1))
+                        #if (row, col) == (5, 8):
+                            #print("erro 1")
+                        #print([(row, col, 1)])
+                        return [(row, col, 1)]
+                    if (_tuple[1] >= state.board.size/2):
+                        #actions.append((row, col, 0))
+                        #if (row, col) == (5, 8):
+                            #print("erro 2")
+                        #print([(row, col, 0)])
+                        return [(row, col, 0)]
+                        
+                else:                   
+                    if (_tuple[0] >= state.board.size//2 + 1):
+                        #actions.append((row, col, 1))
+                        #if (row, col) == (5, 8):
+                            #print("erro 3")
+                        #print([(row, col, 1)])
+                        return [(row, col, 1)]
+                    if (_tuple[1] >= state.board.size//2 + 1):
+                        #actions.append((row, col, 0))
+                        #if (row, col) == (5, 8):
+                            #print("erro 4")
+                        #print([(row, col, 0)])
+                        return [(row, col, 0)]
+                                    
+                # THE NUMBER OF ONES AND ZEROS (IN THE ROW) SHOULD BE SIZE/2
+                _tuple = state.board.describe_row(row)
+                if state.board.size%2 == 0:                    
+                    if (_tuple[0] >= state.board.size/2):
+                        #actions.append((row, col, 1))
+                        #print([(row, col, 1)])
+                        return [(row, col, 1)]
+                    if (_tuple[1] >= state.board.size/2):
+                        #actions.append((row, col, 0))
+                        #print([(row, col, 0)])
+                        return [(row, col, 0)]  
+                    
+                else:                   
+                    if (_tuple[0] >= state.board.size//2 + 1):
+                        #actions.append((row, col, 1))
+                        #print([(row, col, 1)])
+                        return [(row, col, 1)]
+                    if (_tuple[1] >= state.board.size//2 + 1):
+                        #actions.append((row, col, 0))
+                        #print([(row, col, 0)])
+                        return [(row, col, 0)]
+                    
+                # VERIFICAR LINHAS IGUAIS
+                if (_tuple[2] == 1):
+                    possible_row = state.board.get_row(row)[:]
+                    possible_row[col] = 0
+                    if (state.board.equal_row(possible_row)):
+                        #actions.append((row, col, 1))
+                        #print([(row, col, 1)])
+                        return [(row, col, 1)]
+                    possible_row[col] = 1
+                    if (state.board.equal_row(possible_row)):
+                        #actions.append((row, col, 0))
+                        #print([(row, col, 0)])
+                        return [(row, col, 0)]
+                
+                _tuple = state.board.describe_col(col) #(0s, 1s, 2s)
+                # VERIFICAR COLUNAS IGUAIS
+                if (_tuple[2] == 1):
+                    possible_col = state.board.get_col(col)[:]
+                    possible_col[row] = 0
+                    if (state.board.equal_col(possible_col)):
+                        #actions.append((row, col, 1))
+                        #if (row, col) == (5, 8):
+                            #print("erro 5")
+                        #print([(row, col, 1)])
+                        return [(row, col, 1)]
+                    
+                    possible_col[row] = 1
+                    if (state.board.equal_col(possible_col)):
+                        #actions.append((row, col, 0))
+                        #if (row, col) == (5, 8):
+                            #print("erro 6")
+                        #print([(row, col, 0)])
+                        return [(row, col, 0)]
+                    
                 # ADICIONA ACOES POSSIVEIS
                 actions.append((row, col, 0))
                 actions.append((row, col, 1))
@@ -487,7 +484,7 @@ if __name__ == "__main__":
     board = Board.parse_instance_from_stdin()
     problem = Takuzu(board)
     
-    goal_node = depth_first_tree_search(problem)
+    goal_node = astar_search(problem)
     
     goal_node.state.board.print_board()
     
